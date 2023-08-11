@@ -10,7 +10,7 @@ JOB_NAME=os.environ['JOB_NAME']
 if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
-    config={**config,**custom};
+    config={**config,**custom}
 
 SERVICE_ID=config['SERVICE_ID']
 PORT=config['PORT']

@@ -1,0 +1,9 @@
+<service>
+  <id>%SERVICE_ID%</id>
+  <name>%SERVICE_NAME%</name>
+  <description>%SERVICE_DESCRIPTION%</description>
+  <executable>php</executable>
+  <arguments>artisan serve --host=127.0.0.1 --port=%PORT%</arguments>
+  <logmode>rotate</logmode>
+  <stopparentprocessfirst>true</stopparentprocessfirst>
+</service>
