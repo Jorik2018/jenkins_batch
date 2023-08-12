@@ -63,7 +63,6 @@ if JOB_NAME in config:
     config={**config,**custom}
 
 print(config)
-
 if 'PORT' in config:
     if 'spring_' in JOB_NAME:
         config['server.port']=config['PORT']
