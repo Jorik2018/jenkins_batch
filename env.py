@@ -52,7 +52,7 @@ except FileNotFoundError:
     except FileNotFoundError:
         env_file=None
 
-if env_file==None:
+if env_file!=None:
     Lines = env_file.readlines()
 else:
     Lines=[]
