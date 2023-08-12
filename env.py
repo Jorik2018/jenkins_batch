@@ -83,21 +83,22 @@ for key in ['SERVICE_ID','SERVICE_NAME','SERVICE_DESCRIPTION']:
 if 'PORT' in config:
     service['PORT']=config['PORT']
 
-
-with open(env_filename.replace('.example',''), 'w+') as file_out:
-    for line in Lines:
-        words=line.split('=')
-        if len(words)==2 and words[0]!='VUE_APP_PUBLIC_PATH':
-            if words[0].strip() in config:
-                words[1]=config[words[0].strip()]
-            file_out.write(str(words[0]).strip()+'='+str(words[1]).strip()+'\n')
-    key='VUE_APP_PUBLIC_PATH'
-    if key in config:
-        print(config)
-        print('====================================')
-        file_out.write('VUE_APP_PUBLIC_PATH='+config[key]+'\n')
-        file_out.write('PUBLIC_URL='+config[key])
-        
+try:
+    with open(env_filename.replace('.example',''), 'w+') as file_out:
+        for line in Lines:
+            words=line.split('=')
+            if len(words)==2 and words[0]!='VUE_APP_PUBLIC_PATH':
+                if words[0].strip() in config:
+                    words[1]=config[words[0].strip()]
+                file_out.write(str(words[0]).strip()+'='+str(words[1]).strip()+'\n')
+        key='VUE_APP_PUBLIC_PATH'
+        if key in config:
+            print(config)
+            print('====================================')
+            file_out.write('VUE_APP_PUBLIC_PATH='+config[key]+'\n')
+            file_out.write('PUBLIC_URL='+config[key])
+except Exception as e:
+    print("An error occurred:", e)
 
 
     
