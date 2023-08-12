@@ -41,20 +41,26 @@ else:
     template=''
 
 
-
+env_file=None
 try:
     env_filename=WORKSPACE+'\\.env.example'
     env_file = open(env_filename, 'r')
 except FileNotFoundError:
-    env_filename=WORKSPACE+'\\src\\main\\resources\\application.properties.example'
-    env_file = open(env_filename, 'r')
+    try:
+        env_filename=WORKSPACE+'\\src\\main\\resources\\application.properties.example'
+        env_file = open(env_filename, 'r')
+    except FileNotFoundError:
+        env_file=None
 
-Lines = env_file.readlines()
+if env_file==None:
+    Lines = env_file.readlines()
+else:
+    Lines=[]
 
 if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
-    config={**config,**custom};
+    config={**config,**custom}
 
 print(config)
 
