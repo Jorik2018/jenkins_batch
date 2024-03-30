@@ -12,6 +12,7 @@ if 'spring_' in JOB_NAME:
     fin = open(gradle, "rt")
     data = fin.read()
     data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
+    data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
     fin.close()
     fin = open(gradle, "wt")
     fin.write(data)
@@ -22,7 +23,7 @@ elif 'quarkus' in JOB_NAME:
     fin = open(gradle, "rt")
     data = fin.read()
     data = data.replace('C:/projects/java/spring/java_isobit/build', 'D:/java')
-    data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
+    data = data.replace('/Users/ealarcop/Projects/java/java_isobit/build', 'D:/java')
     #close the input file
     fin.close()
     #open the input file in write mode
