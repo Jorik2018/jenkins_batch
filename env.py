@@ -1,3 +1,4 @@
+import re
 import time
 from config import config
 import sys,os
@@ -41,23 +42,6 @@ elif 'laravel' in JOB_NAME:
 else:
     template=''
 
-
-env_file=None
-try:
-    env_filename=WORKSPACE+'\\.env.example'
-    env_file = open(env_filename, 'r')
-except FileNotFoundError:
-    try:
-        env_filename=WORKSPACE+'\\src\\main\\resources\\application.properties.example'
-        env_file = open(env_filename, 'r')
-    except FileNotFoundError:
-        env_file=None
-
-if env_file!=None:
-    Lines = env_file.readlines()
-else:
-    Lines=[]
-
 if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
@@ -69,14 +53,14 @@ if 'PORT' in config:
         config['server.port']=config['PORT']
     else:
         config['quarkus.http.port']=config['PORT']
-    
+
 for key in ['VUE_APP_PUBLIC_PATH','DESTINY_DIR']:
     if key in config:
         file = open(key, 'w')
         file.write(config[key].replace('/','\\'))
         file.close()
 
-service={};
+service = {}
 for key in ['SERVICE_ID','SERVICE_NAME','SERVICE_DESCRIPTION']:
     if key in config:
         service[key]=config[key]
@@ -84,22 +68,43 @@ for key in ['SERVICE_ID','SERVICE_NAME','SERVICE_DESCRIPTION']:
 if 'PORT' in config:
     service['PORT']=config['PORT']
 
-try:
-    with open(env_filename.replace('.example',''), 'w+') as file_out:
-        for line in Lines:
-            words=line.split('=')
-            if len(words)==2 and words[0]!='VUE_APP_PUBLIC_PATH':
-                if words[0].strip() in config:
-                    words[1]=config[words[0].strip()]
-                file_out.write(str(words[0]).strip()+'='+str(words[1]).strip()+'\n')
-        key='VUE_APP_PUBLIC_PATH'
-        if key in config:
-            print(config)
-            print('====================================')
-            file_out.write('VUE_APP_PUBLIC_PATH='+config[key]+'\n')
-            file_out.write('PUBLIC_URL='+config[key])
-except Exception as e:
-    print("An error occurred:", e)
+pattern = r'{keyvault}(\S+)'
+
+def replace_placeholders(line):
+    def replace(match):
+        key = match.group(1)
+        if key not in config:
+            raise ValueError(f"Key '{key}' not found in map_config")
+        return config[key]
+    return re.sub(pattern, replace, line)
+
+for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.properties.example',
+                      '\\src\\main\\resources\\application.yml.example']:
+    env_file=None
+    try:
+        env_filename=WORKSPACE+'\\.env.example'
+        env_file = open(env_filename, 'r')
+    except FileNotFoundError:
+        env_file=None
+    if env_file!=None:
+        Lines = env_file.readlines()
+    else:
+        Lines=[]
+    try:
+        with open(env_filename.replace('.example',''), 'w+') as file_out:
+            for line in Lines:
+                line = replace_placeholders(line)
+                words=line.split('=')
+                if len(words)==2 and words[0]!='VUE_APP_PUBLIC_PATH':
+                    if words[0].strip() in config:
+                        words[1]=config[words[0].strip()]
+                    file_out.write(str(words[0]).strip()+'='+str(words[1]).strip()+'\n')
+            key='VUE_APP_PUBLIC_PATH'
+            if key in config:
+                file_out.write('VUE_APP_PUBLIC_PATH='+config[key]+'\n')
+                file_out.write('PUBLIC_URL='+config[key])
+    except Exception as e:
+        print("An error occurred:", e)
 
 
     
