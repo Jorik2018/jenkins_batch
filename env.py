@@ -74,7 +74,7 @@ def replace_placeholders(line):
     print('replace on ',line)
     def replace(match):
         key = match.group(1)
-        prin('key=', key)
+        print('key=', key)
         if key not in config:
             raise ValueError(f"Key '{key}' not found in map_config")
         return config[key]
