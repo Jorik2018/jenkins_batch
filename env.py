@@ -85,7 +85,7 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
         env_filename=WORKSPACE+env_filename
         env_file = open(env_filename, 'r')
     except FileNotFoundError:
-        print(env_file+" no exists!")
+        print(env_file, " no exists!")
         continue
     if env_file!=None:
         Lines = env_file.readlines()
