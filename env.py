@@ -71,8 +71,10 @@ if 'PORT' in config:
 pattern = r'{keyvault}(\S+)'
 
 def replace_placeholders(line):
+    print('replace on ',line)
     def replace(match):
         key = match.group(1)
+        prin('key=', key)
         if key not in config:
             raise ValueError(f"Key '{key}' not found in map_config")
         return config[key]
@@ -87,10 +89,7 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
     except FileNotFoundError:
         print(env_file, " no exists!")
         continue
-    if env_file!=None:
-        Lines = env_file.readlines()
-    else:
-        Lines=[]
+    Lines = env_file.readlines()
     try:
         with open(env_filename.replace('.example',''), 'w+') as file_out:
             for line in Lines:
