@@ -72,7 +72,6 @@ pattern = r'{keyvault}(\S+)'
 pattern = r'{keyvault}(\S+?)(?="|\s|$)'
 
 def replace_placeholders(line):
-    print('replace on ',line)
     def replace(match):
         key = match.group(1)
         print('key=', key)
@@ -100,6 +99,8 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
                     if words[0].strip() in config:
                         words[1]=config[words[0].strip()]
                     file_out.write(str(words[0]).strip()+'='+str(words[1]).strip()+'\n')
+                elif len(line.strip())>0:
+                    file_out.write(line+'\n')
             key='VUE_APP_PUBLIC_PATH'
             if key in config:
                 file_out.write('VUE_APP_PUBLIC_PATH='+config[key]+'\n')
