@@ -82,7 +82,7 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
                       '\\src\\main\\resources\\application.yml.example']:
     env_file=None
     try:
-        env_filename=WORKSPACE+'\\.env.example'
+        env_filename=WORKSPACE+env_filename
         env_file = open(env_filename, 'r')
     except FileNotFoundError:
         env_file=None
