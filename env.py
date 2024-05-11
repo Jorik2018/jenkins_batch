@@ -69,6 +69,7 @@ if 'PORT' in config:
     service['PORT']=config['PORT']
 
 pattern = r'{keyvault}(\S+)'
+pattern = r'{keyvault}(\S+?)(?="|\s|$)'
 
 def replace_placeholders(line):
     print('replace on ',line)
