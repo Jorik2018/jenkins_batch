@@ -77,7 +77,7 @@ def replace_placeholders(line):
         print('key=', key)
         if key not in config:
             raise ValueError(f"Key '{key}' not found in map_config")
-        return config[key]
+        return str(config[key])
     return re.sub(pattern, replace, line)
 
 for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.properties.example',
