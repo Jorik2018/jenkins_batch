@@ -56,6 +56,7 @@ if 'SERVICE_ID' in service:
             else:
                 data = data.replace('%JAR%',r'D:\microservicios\\'+JOB_NAME+'\\quarkus-run.jar')
         with open(WORKSPACE+'\service.xml', 'w+') as file:
+            print(data)
             file.write(data)
             print(WORKSPACE+'\service.xml was created!')
 
