@@ -47,7 +47,6 @@ if JOB_NAME in config:
     del config[JOB_NAME]
     config={**config,**custom}
 
-print(config)
 if 'PORT' in config:
     if 'spring_' in JOB_NAME:
         config['server.port']=config['PORT']
@@ -74,7 +73,6 @@ pattern = r'{keyvault}(\S+?)(?="|\s|$)'
 def replace_placeholders(line):
     def replace(match):
         key = match.group(1)
-        print('key=', key)
         if key not in config:
             raise ValueError(f"Key '{key}' not found in map_config")
         return str(config[key])
@@ -87,7 +85,6 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
         env_filename=WORKSPACE+env_filename
         env_file = open(env_filename, 'r')
     except FileNotFoundError:
-        print(env_file, " no exists!")
         continue
     Lines = env_file.readlines()
     try:
