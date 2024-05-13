@@ -47,7 +47,10 @@ if 'SERVICE_ID' in service:
                 port=config[key]
             data = data.replace('%'+key.strip()+'%',str(config[key]).strip())
         if template=='.rust':
-            data = data.replace('%EXECUTABLE%',os.path.join(WORKSPACE,'target','release',JOB_NAME+'.exe'))
+            for path in os.listdir(WORKSPACE+'\\target\\release'):
+                    if os.path.isfile(os.path.join(WORKSPACE+'\\target\\release', path)):
+                        if path.endswith(".exe"):
+                            data = data.replace('%EXECUTABLE%',os.path.join(WORKSPACE,'target','release',path))
         if template=='.java':
             if 'spring' in JOB_NAME:
                 for path in os.listdir(WORKSPACE+'\\build\\libs'):
