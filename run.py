@@ -18,7 +18,7 @@ if 'quarkus' in JOB_NAME or 'spring' in JOB_NAME:
     template='.java'
 elif 'laravel' in JOB_NAME:
     template='.laravel'
-elif 'rust_' in JOB_NAME or 'axum_' in JOB_NAME:
+elif 'rust_' in JOB_NAME or 'axum_' in JOB_NAME or 'axum-' in JOB_NAME:
     template='.rust'
 elif 'flask' in JOB_NAME:
     template='.python'
