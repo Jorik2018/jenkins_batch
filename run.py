@@ -50,7 +50,7 @@ if 'SERVICE_ID' in service:
             for path in os.listdir(WORKSPACE+'\\target\\release'):
                     if os.path.isfile(os.path.join(WORKSPACE+'\\target\\release', path)):
                         if path.endswith(".exe"):
-                            data = data.replace('%EXECUTABLE%',os.path.join(WORKSPACE,'target','release',path))
+                            data = data.replace('%EXECUTABLE%',os.path.join((r'D:\microservicios\ ').strip(),JOB_NAME,path))
         if template=='.java':
             if 'spring' in JOB_NAME:
                 for path in os.listdir(WORKSPACE+'\\build\\libs'):
@@ -100,20 +100,23 @@ if p.returncode==0:
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
 
-if 'spring' in JOB_NAME:
+if 'axum' in JOB_NAME:
+    p=run(["robocopy",WORKSPACE+'\\target\\release','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    print('robocopy -> exit status code:', p.returncode )
+    print('stdout:', p.stdout.decode(charset))
+    print('stderr:', p.stderr.decode(charset))
+elif 'spring' in JOB_NAME:
     p=run(["robocopy",WORKSPACE+'\\build\\libs','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
-    shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
 elif 'quarkus' in JOB_NAME:
     p=run(["robocopy",WORKSPACE+'\\build\\quarkus-app','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
-    shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
-else:
-    shutil.copy(r'D:\wildfly\bin\service.exe', WORKSPACE+'\service.exe')
+shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
+
 #    p=run(["robocopy",WORKSPACE+'\\dist','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
 
 
@@ -126,7 +129,6 @@ with open(WORKSPACE+'\\run.bat', 'w+') as the_file:
     print(WORKSPACE+'\\run.bat was created!')
     
 if 'quarkus' in JOB_NAME or 'spring' in JOB_NAME:
-
     if 'spring' in JOB_NAME:
         for path in os.listdir('D:\\microservicios\\'+JOB_NAME):
             if os.path.isfile(os.path.join('D:\\microservicios\\'+JOB_NAME, path)):
@@ -138,7 +140,9 @@ elif 'flask' in JOB_NAME:
     if os.path.exists(WORKSPACE+'\\run.bat'):
         shutil.copy(WORKSPACE+'\\run.bat', 'D:\\microservicios\\'+JOB_NAME+'\\run.bat')
     os.chdir('D:\\microservicios\\'+JOB_NAME)
-
+else:
+    shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
+    os.chdir('D:\\microservicios\\'+JOB_NAME)
 print('installing service "'+SERVICE_ID+'"!')
 p=run(["service","install"], stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
