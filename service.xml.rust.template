@@ -2,7 +2,7 @@
   <id>%SERVICE_ID%</id>
   <name>%SERVICE_NAME%</name>
   <description>%SERVICE_DESCRIPTION%</description>
-  <executable>%EXECUTABLE%</executable>
+  <executable>"%EXECUTABLE%"</executable>
   <logmode>rotate</logmode>
   <stopparentprocessfirst>true</stopparentprocessfirst>
 </service>
