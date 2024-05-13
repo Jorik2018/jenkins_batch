@@ -105,7 +105,7 @@ if 'axum' in JOB_NAME:
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
-    p=run(["robocopy",WORKSPACE+'\\.env','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    shutil.copy(WORKSPACE+'\\.env', 'D:\\microservicios\\'+JOB_NAME+'\.env')
     
 elif 'spring' in JOB_NAME:
     p=run(["robocopy",WORKSPACE+'\\build\\libs','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
