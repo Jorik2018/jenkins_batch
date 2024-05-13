@@ -18,6 +18,8 @@ if 'quarkus' in JOB_NAME or 'spring' in JOB_NAME:
     template='.java'
 elif 'laravel' in JOB_NAME:
     template='.laravel'
+elif 'rust' in JOB_NAME:
+    template='.rust'
 elif 'flask' in JOB_NAME:
     template='.python'
 elif 'express' in JOB_NAME:
@@ -43,6 +45,8 @@ if 'SERVICE_ID' in service:
             if key=='PORT':
                 port=config[key]
             data = data.replace('%'+key.strip()+'%',str(config[key]).strip())
+        if template=='.rust':
+            data = data.replace('%EXECUTABLE%',r'target\\release\\'+JOB_NAME+'.exe')
         if template=='.java':
             if 'spring' in JOB_NAME:
                 for path in os.listdir(WORKSPACE+'\\build\\libs'):
