@@ -53,6 +53,7 @@ if 'SERVICE_ID' in service:
                             data = data.replace('%EXECUTABLE%',os.path.join((r'D:\microservicios\ ').strip(),JOB_NAME,path))
         if template=='.java':
             if 'spring' in JOB_NAME:
+                #if JOB_NAME contins 'zk'
                 for path in os.listdir(WORKSPACE+'\\build\\libs'):
                     if os.path.isfile(os.path.join(WORKSPACE+'\\build\\libs', path)):
                         if path.endswith("SNAPSHOT.jar"):
@@ -108,19 +109,21 @@ if 'axum' in JOB_NAME:
     shutil.copy(WORKSPACE+'\\.env', 'D:\\microservicios\\'+JOB_NAME+'\.env')
     
 elif 'spring' in JOB_NAME:
-    p=run(["robocopy",WORKSPACE+'\\build\\libs','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
-    print('robocopy -> exit status code:', p.returncode )
-    print('stdout:', p.stdout.decode(charset))
-    print('stderr:', p.stderr.decode(charset))
+    if '-zk-' not in JOB_NAME:
+        p=run(["robocopy",WORKSPACE+'\\build\\libs','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+        print('robocopy -> exit status code:', p.returncode )
+        print('stdout:', p.stdout.decode(charset))
+        print('stderr:', p.stderr.decode(charset))
 elif 'quarkus' in JOB_NAME:
     p=run(["robocopy",WORKSPACE+'\\build\\quarkus-app','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
+
+if '-zk-' in JOB_NAME:
+    JOB_NAME = 'zk'
+
 shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
-
-#    p=run(["robocopy",WORKSPACE+'\\dist','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
-
 
 with open(WORKSPACE+'\\run.bat', 'w+') as the_file:
     if template=='.node':
@@ -130,21 +133,10 @@ with open(WORKSPACE+'\\run.bat', 'w+') as the_file:
         the_file.write('waitress-serve'+port+' wsqi:app')
     print(WORKSPACE+'\\run.bat was created!')
     
-if 'quarkus' in JOB_NAME or 'spring' in JOB_NAME:
-    if 'spring' in JOB_NAME:
-        for path in os.listdir('D:\\microservicios\\'+JOB_NAME):
-            if os.path.isfile(os.path.join('D:\\microservicios\\'+JOB_NAME, path)):
-                print(path)
-    
-    shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
-    os.chdir('D:\\microservicios\\'+JOB_NAME)
-elif 'flask' in JOB_NAME:
-    if os.path.exists(WORKSPACE+'\\run.bat'):
-        shutil.copy(WORKSPACE+'\\run.bat', 'D:\\microservicios\\'+JOB_NAME+'\\run.bat')
-    os.chdir('D:\\microservicios\\'+JOB_NAME)
-else:
-    shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
-    os.chdir('D:\\microservicios\\'+JOB_NAME)
+if os.path.exists(WORKSPACE+'\\run.bat'):
+    shutil.copy(WORKSPACE+'\\run.bat', 'D:\\microservicios\\'+JOB_NAME+'\\run.bat')
+shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
+
 print('installing service "'+SERVICE_ID+'"!')
 p=run(["service","install"], stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
