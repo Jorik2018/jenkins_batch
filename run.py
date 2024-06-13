@@ -94,8 +94,11 @@ if p.returncode==0:
     print('sc stop -> status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
+    #uninstall service
     if 'quarkus' in JOB_NAME or 'spring' in JOB_NAME:
-        if os.path.exists('D:\\microservicios\\'+JOB_NAME):
+        if '-zk-' in JOB_NAME:
+            os.chdir('D:\\microservicios\\zk')
+        else:
             os.chdir('D:\\microservicios\\'+JOB_NAME)
     #se asume que existe service.exe 
     p=run(["service","uninstall"], stdout=PIPE, stderr=PIPE)
