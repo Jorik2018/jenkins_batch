@@ -129,7 +129,6 @@ if '-zk-' in JOB_NAME:
     JOB_NAME = 'zk'
     os.chdir('D:\\microservicios\\'+JOB_NAME)
     print('chdir D:\\microservicios\\'+JOB_NAME)
-
 shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
 with open(WORKSPACE+'\\run.bat', 'w+') as the_file:
     if template=='.node':
