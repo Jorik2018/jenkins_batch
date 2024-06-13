@@ -53,11 +53,14 @@ if 'SERVICE_ID' in service:
                             data = data.replace('%EXECUTABLE%',os.path.join((r'D:\microservicios\ ').strip(),JOB_NAME,path))
         if template=='.java':
             if 'spring' in JOB_NAME:
-                if os.path.exists(WORKSPACE+'\\build\\libs'):
-                    for path in os.listdir(WORKSPACE+'\\build\\libs'):
-                        if os.path.isfile(os.path.join(WORKSPACE+'\\build\\libs', path)):
-                            if path.endswith("SNAPSHOT.jar"):
-                                data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\'+path)
+                if '-zk-' in JOB_NAME:
+                    data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\zk_web-0.0.1-SNAPSHOT.jar --spring.config.name=zk_web')
+                else:
+                    if os.path.exists(WORKSPACE+'\\build\\libs'):
+                        for path in os.listdir(WORKSPACE+'\\build\\libs'):
+                            if os.path.isfile(os.path.join(WORKSPACE+'\\build\\libs', path)):
+                                if path.endswith("SNAPSHOT.jar"):
+                                    data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\'+path)
             else:
                 data = data.replace('%JAR%',r'D:\microservicios\\'+JOB_NAME+'\\quarkus-run.jar')
         with open(WORKSPACE+'\service.xml', 'w+') as file:
