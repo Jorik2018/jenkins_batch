@@ -53,7 +53,7 @@ if 'SERVICE_ID' in service:
         if template=='.java':
             if 'spring' in JOB_NAME:
                 if '-zk-' in JOB_NAME:
-                    data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+'zk\\zk_web-0.0.1-SNAPSHOT.jar\" --spring.config.name=\"zk_web')
+                    data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+'zk\\zk_web-0.0.1-SNAPSHOT.jar\" -Djava.library.path=\"D:\\microservicios\\zk\" --spring.config.name=\"zk_web')
                 else:
                     if os.path.exists(WORKSPACE+'\\build\\libs'):
                         for path in os.listdir(WORKSPACE+'\\build\\libs'):
