@@ -88,7 +88,7 @@ if p.returncode==0:
         output=p.stdout.decode(charset)
         for line in output.splitlines():
             if 'TCP' in line and (':'+str(PORT)+' ') in line:
-                print(line)
+                print("============>"+line)
         print( 'stderr:', p.stderr.decode("cp1252"))
     p=run(["sc","stop",SERVICE_ID], stdout=PIPE, stderr=PIPE)
     print('sc stop -> status code:', p.returncode )
