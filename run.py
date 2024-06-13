@@ -78,7 +78,6 @@ def f(p):
 		sys.exit(p.returncode)
 
 charset="cp1252"
-
 p=run(["sc","query",SERVICE_ID], stdout=PIPE, stderr=PIPE)
 print('p.returncode='+str(p.returncode))
 if p.returncode==1060:
