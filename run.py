@@ -127,7 +127,6 @@ if '-zk-' in JOB_NAME:
     print('chdir D:\\microservicios\\'+JOB_NAME)
 
 shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
-
 with open(WORKSPACE+'\\run.bat', 'w+') as the_file:
     if template=='.node':
         the_file.write('nodist global 15.14.0 && node dist/index.js')
