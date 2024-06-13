@@ -36,6 +36,8 @@ if 'SERVICE_ID' in service:
         data = file.read()
         if 'JRE' in config:
             data = data.replace('%JRE%',r'D:\java\jdk-17.0.5+8\bin\java')
+        elif '-zk-' in JOB_NAME:
+            data = data.replace('%JRE%',r'D:\microservicios\zk\run.bat')
         else:
             data = data.replace('%JRE%',r'D:\jdk-11.0.11\bin\java')
         for key in config:
