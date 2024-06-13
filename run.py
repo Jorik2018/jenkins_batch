@@ -1,4 +1,5 @@
 import time
+import re
 from config import config
 import sys,os
 from subprocess import run, PIPE,check_output,STDOUT
@@ -88,7 +89,12 @@ if p.returncode==0:
         output=p.stdout.decode(charset)
         for line in output.splitlines():
             if 'TCP' in line and (':'+str(PORT)+' ') in line:
-                print("============>"+line)
+                match = re.search(r'\s(\d+)$', line)
+                if match:
+                    pid = match.group(1)
+                    print("============>pid="+pid)
+                    run(["taskkill", "/F", "/PID", pid], stdout=PIPE, stderr=PIPE)
+
         print( 'stderr:', p.stderr.decode("cp1252"))
     p=run(["sc","stop",SERVICE_ID], stdout=PIPE, stderr=PIPE)
     print('sc stop -> status code:', p.returncode )
