@@ -31,7 +31,6 @@ service=config
 
 if 'SERVICE_ID' in service:
     config=service
-    print(template)
     with open(r'D:\wildfly\bin\service.xml'+template+'.template', 'r') as file:
         data = file.read()
         if 'JRE' in config:
