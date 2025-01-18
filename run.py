@@ -86,7 +86,7 @@ if p.returncode==1060:
     print('El servicio "'+SERVICE_ID+'" no existe se instalara!')
 returncode=p.returncode
 
-print('El PORT "'+PORT+'" se liberara!')
+print('El PORT "'+str(PORT)+'" se liberara!')
 p=run(["netstat","-ano"], stdout=PIPE, stderr=PIPE)
 if p.returncode==0:
     output=p.stdout.decode(charset)
