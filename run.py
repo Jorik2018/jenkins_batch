@@ -154,6 +154,7 @@ if os.path.exists(WORKSPACE+'\\run.bat'):
 shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
 
 print('installing service "'+SERVICE_ID+'"!')
+print('os.getcwd()="'+os.getcwd()+'"!')
 p=run(["service","install"], stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
 print('stdout:', p.stdout.decode() )
