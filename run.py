@@ -159,7 +159,7 @@ print('os.getcwd()="'+os.getcwd()+'"!')
 
 
 
-p=run(["dir","C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\quarkus_jreports_api\\service.xml"], stdout=PIPE, stderr=PIPE)
+p=run(["cmd", "/c", "dir","C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\quarkus_jreports_api\\service.xml"], stdout=PIPE, stderr=PIPE)
 print('dir=', p.returncode )
 print('stdout:', p.stdout.decode() )
 print('stderr:', p.stderr.decode() )
