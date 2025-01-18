@@ -155,6 +155,15 @@ shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.
 
 print('installing service "'+SERVICE_ID+'"!')
 print('os.getcwd()="'+os.getcwd()+'"!')
+
+
+
+
+p=run(["dir","C:\ProgramData\Jenkins\.jenkins\workspace\quarkus_jreports_api\service.xml"], stdout=PIPE, stderr=PIPE)
+print('dir=', p.returncode )
+print('stdout:', p.stdout.decode() )
+print('stderr:', p.stderr.decode() )
+
 p=run(["service","install"], stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
 print('stdout:', p.stdout.decode() )
