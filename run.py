@@ -84,20 +84,23 @@ p=run(["sc","query",SERVICE_ID], stdout=PIPE, stderr=PIPE)
 print('p.returncode='+str(p.returncode))
 if p.returncode==1060:
     print('El servicio "'+SERVICE_ID+'" no existe se instalara!')
-if p.returncode==0:
-    print('El servicio "'+SERVICE_ID+'" existe se desinstalara!')
-    p=run(["netstat","-ano"], stdout=PIPE, stderr=PIPE)
-    if p.returncode==0:
-        output=p.stdout.decode(charset)
-        for line in output.splitlines():
-            if 'TCP' in line and (':'+str(PORT)+' ') in line:
-                match = re.search(r'\s(\d+)$', line)
-                if match:
-                    pid = match.group(1)
-                    print("============>pid="+pid)
-                    run(["taskkill", "/F", "/PID", pid], stdout=PIPE, stderr=PIPE)
+returncode=p.returncode
 
-        print( 'stderr:', p.stderr.decode("cp1252"))
+print('El PORT "'+PORT+'" se liberara!')
+p=run(["netstat","-ano"], stdout=PIPE, stderr=PIPE)
+if p.returncode==0:
+    output=p.stdout.decode(charset)
+    for line in output.splitlines():
+        if 'TCP' in line and (':'+str(PORT)+' ') in line:
+            match = re.search(r'\s(\d+)$', line)
+            if match:
+                pid = match.group(1)
+                print("============>pid="+pid)
+                run(["taskkill", "/F", "/PID", pid], stdout=PIPE, stderr=PIPE)
+    print( 'stderr:', p.stderr.decode("cp1252"))
+
+if returncode==0:
+    print('El servicio "'+SERVICE_ID+'" existe se desinstalara!')
     p=run(["sc","stop",SERVICE_ID], stdout=PIPE, stderr=PIPE)
     print('sc stop -> status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
