@@ -166,7 +166,7 @@ print('stdout:', p.stdout.decode(charset))
 print('stderr:', p.stderr.decode() )
 
 
-cmd=["service","install",WORKSPACE+'\service.xml']
+cmd=["service","install",WORKSPACE+'\service2.xml']
 print(cmd)
 p=run(cmd, stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
