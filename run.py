@@ -150,14 +150,9 @@ with open(DESTINY_PATH+'\\run.bat', 'w+') as the_file:
         the_file.write('waitress-serve'+port+' wsqi:app')
     print(DESTINY_PATH+'\\run.bat was created!')
     
-
-shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
-
 print('installing service "'+SERVICE_ID+'"!')
+os.chdir(DESTINY_PATH)
 print('os.getcwd()="'+os.getcwd()+'"!')
-
-
-
 
 p=run(["cmd", "/c", "dir",DESTINY_PATH], stdout=PIPE, stderr=PIPE)
 print('dir=', p.returncode )
