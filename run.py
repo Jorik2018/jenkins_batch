@@ -93,6 +93,7 @@ if p.returncode==0:
     for line in output.splitlines():
         if 'TCP' in line and (':'+str(PORT)+' ') in line:
             match = re.search(r'\s(\d+)$', line)
+            print("match="+line)
             if match:
                 pid = match.group(1)
                 print("============>pid="+pid)
