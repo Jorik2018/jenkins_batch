@@ -170,7 +170,7 @@ if not os.path.exists(ruta_archivo):
     print(f"Error: El archivo {ruta_archivo} no existe.")
     exit(1)
 
-p=run(["service","install"], stdout=PIPE, stderr=PIPE)
+p=run(["service","install",WORKSPACE+'\service.xml'], stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
 print('stdout:', p.stdout.decode(charset))
 print('stderr:', p.stderr.decode() )
