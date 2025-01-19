@@ -29,7 +29,7 @@ else:
     template=''
 
 service=config
-
+DESTINY_PATH = 'D:\\microservicios\\'+JOB_NAME
 if 'SERVICE_ID' in service:
     config=service
     with open(r'D:\wildfly\bin\service.xml'+template+'.template', 'r') as file:
@@ -64,11 +64,11 @@ if 'SERVICE_ID' in service:
                                 if path.endswith("SNAPSHOT.jar"):
                                     data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\'+path)
             else:
-                data = data.replace('%JAR%',r'D:\microservicios\\'+JOB_NAME+'\\quarkus-run.jar')
-        with open(WORKSPACE+'\service.xml', 'w+') as file:
+                data = data.replace('%JAR%',DESTINY_PATH+'\\quarkus-run.jar')
+        with open(DESTINY_PATH+'\service.xml', 'w+') as file:
             print(data)
             file.write(data)
-            print(WORKSPACE+'\service.xml was created!')
+            print(DESTINY_PATH+'\service.xml was created!')
 
 
 def f(p):
@@ -139,19 +139,18 @@ elif 'quarkus' in JOB_NAME:
 
 if '-zk-' in JOB_NAME:
     JOB_NAME = 'zk'
-    os.chdir('D:\\microservicios\\'+JOB_NAME)
-    print('chdir D:\\microservicios\\'+JOB_NAME)
-shutil.copy(r'D:\wildfly\bin\service.exe', 'D:\\microservicios\\'+JOB_NAME+'\service.exe')
-with open(WORKSPACE+'\\run.bat', 'w+') as the_file:
+    os.chdir(DESTINY_PATH)
+    print('chdir '+DESTINY_PATH)
+shutil.copy(r'D:\wildfly\bin\service.exe', DESTINY_PATH+'\service.exe')
+with open(DESTINY_PATH+'\\run.bat', 'w+') as the_file:
     if template=='.node':
         the_file.write('nodist global 15.14.0 && node dist/index.js')
     elif template=='.python':
         port=port and (' --port='+str(port)) or ''
         the_file.write('waitress-serve'+port+' wsqi:app')
-    print(WORKSPACE+'\\run.bat was created!')
+    print(DESTINY_PATH+'\\run.bat was created!')
     
-if os.path.exists(WORKSPACE+'\\run.bat'):
-    shutil.copy(WORKSPACE+'\\run.bat', 'D:\\microservicios\\'+JOB_NAME+'\\run.bat')
+
 shutil.copy(WORKSPACE+'\service.xml', 'D:\\microservicios\\'+JOB_NAME+'\service.xml')
 
 print('installing service "'+SERVICE_ID+'"!')
@@ -160,7 +159,7 @@ print('os.getcwd()="'+os.getcwd()+'"!')
 
 
 
-p=run(["cmd", "/c", "dir","C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\quarkus_jreports_api\\service.xml"], stdout=PIPE, stderr=PIPE)
+p=run(["cmd", "/c", "dir",DESTINY_PATH], stdout=PIPE, stderr=PIPE)
 print('dir=', p.returncode )
 print('stdout:', p.stdout.decode(charset))
 print('stderr:', p.stderr.decode() )
