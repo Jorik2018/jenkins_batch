@@ -163,6 +163,11 @@ p=run(["cmd", "/c", "dir","C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\quarku
 print('dir=', p.returncode )
 print('stdout:', p.stdout.decode(charset))
 print('stderr:', p.stderr.decode() )
+ruta_archivo = "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\quarkus_jreports_api\\service.xml"
+
+if not os.path.exists(ruta_archivo):
+    print(f"Error: El archivo {ruta_archivo} no existe.")
+    exit(1)
 
 p=run(["service","install"], stdout=PIPE, stderr=PIPE)
 print('service install -> exit status code:', p.returncode )
