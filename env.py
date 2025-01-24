@@ -39,7 +39,7 @@ if JOB_NAME in config:
 if 'PORT' in config:
     if 'spring_' in JOB_NAME:
         config['server.port']=config['PORT']
-    else:
+    elif 'quarkus_' in JOB_NAME:
         config['quarkus.http.port']=config['PORT']
 
 for key in ['VUE_APP_PUBLIC_PATH','DESTINY_DIR']:
