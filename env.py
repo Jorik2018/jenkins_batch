@@ -35,7 +35,7 @@ if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
     config={*config,*custom}
-
+print(config)
 if 'PORT' in config:
     if 'spring_' in JOB_NAME:
         config['server.port']=config['PORT']
