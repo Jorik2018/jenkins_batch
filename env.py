@@ -30,8 +30,6 @@ elif 'laravel' in JOB_NAME:
     template='.laravel'
 else:
     template=''
-print(config)
-print('======================')
 if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
