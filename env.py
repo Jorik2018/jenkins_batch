@@ -10,6 +10,9 @@ JOB_NAME=os.environ['JOB_NAME']
 if 'spring_' in JOB_NAME or 'quarkus_' in JOB_NAME or 'java_' in JOB_NAME:
     template='.java'
     for gradle in [WORKSPACE+'\\build.gradle',WORKSPACE+'\\lib\\build.gradle']:
+        if not os.path.exists(gradle):
+            print(f"Archivo no encontrado: {gradle}, se omite.")
+            continue
         fin = open(gradle, "rt")
         data = fin.read()
         data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
