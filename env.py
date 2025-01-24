@@ -7,32 +7,18 @@ import shutil
 
 WORKSPACE=os.environ['WORKSPACE']
 JOB_NAME=os.environ['JOB_NAME']
-if 'spring_' in JOB_NAME:
+if 'spring_' in JOB_NAME or 'quarkus_' in JOB_NAME or 'java_' in JOB_NAME:
     template='.java'
-    gradle=WORKSPACE+'\\build.gradle'
-    fin = open(gradle, "rt")
-    data = fin.read()
-    data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
-    data = data.replace('/Users/ealarcop/Projects/java/java_isobit/build', 'D:/java')
-    fin.close()
-    fin = open(gradle, "wt")
-    fin.write(data)
-    fin.close()
-elif 'quarkus' in JOB_NAME:
-    template='.java'
-    gradle=WORKSPACE+'\\build.gradle'
-    fin = open(gradle, "rt")
-    data = fin.read()
-    data = data.replace('C:/projects/java/spring/java_isobit/build', 'D:/java')
-    data = data.replace('/Users/ealarcop/Projects/java/java_isobit/build', 'D:/java')
-    #close the input file
-    fin.close()
-    #open the input file in write mode
-    fin = open(gradle, "wt")
-    #overrite the input file with the resulting data
-    fin.write(data)
-    #close the file
-    fin.close()
+    for gradle in [WORKSPACE+'\\build.gradle',WORKSPACE+'\\lib\\build.gradle']:
+        fin = open(gradle, "rt")
+        data = fin.read()
+        data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
+        data = data.replace('C:/projects/java/spring/java_isobit/build', 'D:/java')
+        data = data.replace('/Users/ealarcop/Projects/java/java_isobit/build', 'D:/java')
+        fin.close()
+        fin = open(gradle, "wt")
+        fin.write(data)
+        fin.close()
 elif 'flask' in JOB_NAME:
     template='.python'
 elif 'express' in JOB_NAME:
@@ -45,7 +31,7 @@ else:
 if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
-    config={**config,**custom}
+    config={*config,*custom}
 
 if 'PORT' in config:
     if 'spring_' in JOB_NAME:
@@ -104,11 +90,3 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
                 file_out.write('PUBLIC_URL='+config[key])
     except Exception as e:
         print("An error occurred:", e)
-
-
-    
-
-
-
-
-
