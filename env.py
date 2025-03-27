@@ -10,6 +10,9 @@ JOB_NAME=os.environ['JOB_NAME']
 if 'spring_' in JOB_NAME or 'quarkus_' in JOB_NAME or 'java_' in JOB_NAME:
     template='.java'
     for gradle in [WORKSPACE+'\\build.gradle',WORKSPACE+'\\lib\\build.gradle']:
+        if not os.path.exists(gradle):
+            print(f"Archivo no encontrado: {gradle}, se omite.")
+            continue
         fin = open(gradle, "rt")
         data = fin.read()
         data = data.replace('D:/projects/java/spring/isobit/build', 'D:/java')
@@ -27,16 +30,15 @@ elif 'laravel' in JOB_NAME:
     template='.laravel'
 else:
     template=''
-
 if JOB_NAME in config:
     custom=config[JOB_NAME]
     del config[JOB_NAME]
     config={**config,**custom}
-
+    print(config)
 if 'PORT' in config:
     if 'spring_' in JOB_NAME:
         config['server.port']=config['PORT']
-    else:
+    elif 'quarkus_' in JOB_NAME:
         config['quarkus.http.port']=config['PORT']
 
 for key in ['VUE_APP_PUBLIC_PATH','DESTINY_DIR']:
@@ -90,11 +92,3 @@ for env_filename in ['\\.env.example', '\\src\\main\\resources\\application.prop
                 file_out.write('PUBLIC_URL='+config[key])
     except Exception as e:
         print("An error occurred:", e)
-
-
-    
-
-
-
-
-
