@@ -152,7 +152,7 @@ if '-zk-' in JOB_NAME:
 shutil.copy(r'D:\wildfly\bin\service.exe', DESTINY_PATH+'\service.exe')
 with open(DESTINY_PATH+'\\run.bat', 'w+') as the_file:
     if template=='.node':
-        the_file.write('nodist global 18.12.0 && node dist/index.js')
+        the_file.write('C:\\wildfly-18.0.1.Final\\bin\\.data\\node-v22.13.0-win-x64;C:\\wildfly-18.0.1.Final\\bin\\.data\\node-v22.13.0-win-x64\\globals  && npm config set prefix C:\\wildfly-18.0.1.Final\\bin\\.data\\node-v22.13.0-win-x64\\globals && node dist/index.js')
     elif template=='.python':
         port=port and (' --port='+str(port)) or ''
         the_file.write('waitress-serve'+port+' wsqi:app')
