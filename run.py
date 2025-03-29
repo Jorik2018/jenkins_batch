@@ -67,7 +67,8 @@ if 'SERVICE_ID' in service:
             else:
                 data = data.replace('%JAR%',DESTINY_PATH+'\\quarkus-run.jar')
         print(DESTINY_PATH+'\service.xml------------')
-        with open(DESTINY_PATH+'\service.xml', 'w+') as file:
+        os.makedirs(DESTINY_PATH, exist_ok=True)
+        with open(os.path.join(DESTINY_PATH, 'service.xml'), 'w+') as file:
             print(data)
             file.write(data)
             print(DESTINY_PATH+'\service.xml was created!')
@@ -113,7 +114,7 @@ if returncode==0:
         if '-zk-' in JOB_NAME:
             os.chdir('D:\\microservicios\\zk')
         else:
-            os.chdir('D:\\microservicios\\'+JOB_NAME)
+            os.chdir(DESTINY_PATH)
     #se asume que existe service.exe 
     p=run(["service","uninstall"], stdout=PIPE, stderr=PIPE)
     print('service uninstall -> status code:', p.returncode )
@@ -121,20 +122,20 @@ if returncode==0:
     print('stderr:', p.stderr.decode(charset))
 
 if 'axum' in JOB_NAME:
-    p=run(["robocopy",WORKSPACE+'\\target\\release','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    p=run(["robocopy",WORKSPACE+'\\target\\release',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
-    shutil.copy(WORKSPACE+'\\.env', 'D:\\microservicios\\'+JOB_NAME+'\.env')
+    shutil.copy(WORKSPACE+'\\.env', DESTINY_PATH+'\.env')
     
 elif 'spring' in JOB_NAME:
     if '-zk-' not in JOB_NAME:
-        p=run(["robocopy",WORKSPACE+'\\build\\libs','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+        p=run(["robocopy",WORKSPACE+'\\build\\libs',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
         print('robocopy -> exit status code:', p.returncode )
         print('stdout:', p.stdout.decode(charset))
         print('stderr:', p.stderr.decode(charset))
 elif 'quarkus' in JOB_NAME:
-    p=run(["robocopy",WORKSPACE+'\\build\\quarkus-app','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    p=run(["robocopy",WORKSPACE+'\\build\\quarkus-app',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
