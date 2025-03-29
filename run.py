@@ -142,6 +142,10 @@ elif 'express' in JOB_NAME:
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
+    p=run(["robocopy",os.path.join(WORKSPACE,'node_modules'),os.path.join(DESTINY_PATH,'node_modules'),"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    print('robocopy -> exit status code:', p.returncode )
+    print('stdout:', p.stdout.decode(charset))
+    print('stderr:', p.stderr.decode(charset))
     shutil.copy(os.path.join(WORKSPACE,'.env'), os.path.join(DESTINY_PATH,'.env'))
 
 
