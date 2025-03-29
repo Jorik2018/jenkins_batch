@@ -40,6 +40,7 @@ if 'SERVICE_ID' in service:
             data = data.replace('%JRE%',r'D:\microservicios\zk\zk_web-0.0.1-SNAPSHOT.bat')
         else:
             data = data.replace('%JRE%',r'D:\jdk-11.0.11\bin\java')
+            
         for key in config:
             if key=='SERVICE_ID':
                 file = open(key, 'w')
@@ -65,6 +66,7 @@ if 'SERVICE_ID' in service:
                                     data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\'+path)
             else:
                 data = data.replace('%JAR%',DESTINY_PATH+'\\quarkus-run.jar')
+        
         with open(DESTINY_PATH+'\service.xml', 'w+') as file:
             print(data)
             file.write(data)
