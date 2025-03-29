@@ -142,7 +142,7 @@ elif 'express' in JOB_NAME:
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
-    shutil.copy(os.path.join(WORKSPACE,'.env'), os.path.join(DESTINY_PATH,'env'))
+    shutil.copy(os.path.join(WORKSPACE,'.env'), os.path.join(DESTINY_PATH,'.env'))
 
 
 if '-zk-' in JOB_NAME:
