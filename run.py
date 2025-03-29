@@ -66,7 +66,6 @@ if 'SERVICE_ID' in service:
                                     data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\'+path)
             else:
                 data = data.replace('%JAR%',DESTINY_PATH+'\\quarkus-run.jar')
-        print(DESTINY_PATH+'\service.xml------------')
         os.makedirs(DESTINY_PATH, exist_ok=True)
         with open(os.path.join(DESTINY_PATH, 'service.xml'), 'w+') as file:
             print(data)
@@ -127,7 +126,6 @@ if 'axum' in JOB_NAME:
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
     shutil.copy(WORKSPACE+'\\.env', DESTINY_PATH+'\.env')
-    
 elif 'spring' in JOB_NAME:
     if '-zk-' not in JOB_NAME:
         p=run(["robocopy",WORKSPACE+'\\build\\libs',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
@@ -139,6 +137,13 @@ elif 'quarkus' in JOB_NAME:
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
+elif 'express' in JOB_NAME:
+    p=run(["robocopy",os.path.join(WORKSPACE,'dist'),os.path.join(DESTINY_PATH,'dist'),"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    print('robocopy -> exit status code:', p.returncode )
+    print('stdout:', p.stdout.decode(charset))
+    print('stderr:', p.stderr.decode(charset))
+    shutil.copy(os.path.join(WORKSPACE,'.env'), os.path.join(DESTINY_PATH,'env'))
+
 
 if '-zk-' in JOB_NAME:
     JOB_NAME = 'zk'
