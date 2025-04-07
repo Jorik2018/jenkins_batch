@@ -1,3 +1,4 @@
+import glob
 import time
 import re
 from config import config
@@ -120,6 +121,14 @@ if returncode==0:
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
 
+archivos_log = glob.glob(os.path.join(DESTINY_PATH, '*.log'))
+for archivo in archivos_log:
+    try:
+        os.remove(archivo)
+        print(f'Eliminado: {archivo}')
+    except Exception as e:
+        print(f'Error al eliminar {archivo}: {e}')
+        
 if 'axum' in JOB_NAME:
     p=run(["robocopy",WORKSPACE+'\\target\\release',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
@@ -153,6 +162,9 @@ if '-zk-' in JOB_NAME:
     JOB_NAME = 'zk'
     os.chdir(DESTINY_PATH)
     print('chdir '+DESTINY_PATH)
+
+
+
 shutil.copy(r'D:\wildfly\bin\service.exe', DESTINY_PATH+'\service.exe')
 with open(DESTINY_PATH+'\\run.bat', 'w+') as the_file:
     if template=='.node':
