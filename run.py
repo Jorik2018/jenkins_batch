@@ -128,7 +128,7 @@ for archivo in archivos_log:
         print(f'Eliminado: {archivo}')
     except Exception as e:
         print(f'Error al eliminar {archivo}: {e}')
-if '-zk-' not in JOB_NAME:
+if '-zk-' in JOB_NAME:
     archivos_log = glob.glob(os.path.join('D:\\microservicios\\zk', '*.log'))
     for archivo in archivos_log:
         try:
