@@ -1,3 +1,4 @@
+import glob
 import time
 import re
 from config import config
@@ -40,6 +41,7 @@ if 'SERVICE_ID' in service:
             data = data.replace('%JRE%',r'D:\microservicios\zk\zk_web-0.0.1-SNAPSHOT.bat')
         else:
             data = data.replace('%JRE%',r'D:\jdk-11.0.11\bin\java')
+
         for key in config:
             if key=='SERVICE_ID':
                 file = open(key, 'w')
@@ -65,7 +67,8 @@ if 'SERVICE_ID' in service:
                                     data = data.replace('%JAR%',(r'D:\microservicios\ ').strip()+JOB_NAME+'\\'+path)
             else:
                 data = data.replace('%JAR%',DESTINY_PATH+'\\quarkus-run.jar')
-        with open(DESTINY_PATH+'\service.xml', 'w+') as file:
+        os.makedirs(DESTINY_PATH, exist_ok=True)
+        with open(os.path.join(DESTINY_PATH, 'service.xml'), 'w+') as file:
             print(data)
             file.write(data)
             print(DESTINY_PATH+'\service.xml was created!')
@@ -111,40 +114,70 @@ if returncode==0:
         if '-zk-' in JOB_NAME:
             os.chdir('D:\\microservicios\\zk')
         else:
-            os.chdir('D:\\microservicios\\'+JOB_NAME)
+            os.chdir(DESTINY_PATH)
     #se asume que existe service.exe 
     p=run(["service","uninstall"], stdout=PIPE, stderr=PIPE)
     print('service uninstall -> status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
 
+archivos_log = glob.glob(os.path.join(DESTINY_PATH, '*.log'))
+for archivo in archivos_log:
+    try:
+        os.remove(archivo)
+        print(f'Eliminado: {archivo}')
+    except Exception as e:
+        print(f'Error al eliminar {archivo}: {e}')
+if '-zk-' in JOB_NAME:
+    archivos_log = glob.glob(os.path.join('D:\\microservicios\\zk', '*.log'))
+    for archivo in archivos_log:
+        try:
+            os.remove(archivo)
+            print(f'Eliminado: {archivo}')
+        except Exception as e:
+            print(f'Error al eliminar {archivo}: {e}')
+
+
 if 'axum' in JOB_NAME:
-    p=run(["robocopy",WORKSPACE+'\\target\\release','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    p=run(["robocopy",WORKSPACE+'\\target\\release',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
-    shutil.copy(WORKSPACE+'\\.env', 'D:\\microservicios\\'+JOB_NAME+'\.env')
-    
+    shutil.copy(WORKSPACE+'\\.env', DESTINY_PATH+'\.env')
 elif 'spring' in JOB_NAME:
     if '-zk-' not in JOB_NAME:
-        p=run(["robocopy",WORKSPACE+'\\build\\libs','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+        p=run(["robocopy",WORKSPACE+'\\build\\libs',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
         print('robocopy -> exit status code:', p.returncode )
         print('stdout:', p.stdout.decode(charset))
         print('stderr:', p.stderr.decode(charset))
 elif 'quarkus' in JOB_NAME:
-    p=run(["robocopy",WORKSPACE+'\\build\\quarkus-app','D:\\microservicios\\'+JOB_NAME,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    p=run(["robocopy",WORKSPACE+'\\build\\quarkus-app',DESTINY_PATH,"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
     print('robocopy -> exit status code:', p.returncode )
     print('stdout:', p.stdout.decode(charset))
     print('stderr:', p.stderr.decode(charset))
+elif 'express' in JOB_NAME:
+    p=run(["robocopy",os.path.join(WORKSPACE,'dist'),os.path.join(DESTINY_PATH,'dist'),"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    print('robocopy -> exit status code:', p.returncode )
+    print('stdout:', p.stdout.decode(charset))
+    print('stderr:', p.stderr.decode(charset))
+    p=run(["robocopy",os.path.join(WORKSPACE,'node_modules'),os.path.join(DESTINY_PATH,'node_modules'),"/COPYALL","/E"], stdout=PIPE, stderr=PIPE)
+    print('robocopy -> exit status code:', p.returncode )
+    print('stdout:', p.stdout.decode(charset))
+    print('stderr:', p.stderr.decode(charset))
+    shutil.copy(os.path.join(WORKSPACE,'.env'), os.path.join(DESTINY_PATH,'.env'))
+
 
 if '-zk-' in JOB_NAME:
     JOB_NAME = 'zk'
     os.chdir(DESTINY_PATH)
     print('chdir '+DESTINY_PATH)
+
+
+
 shutil.copy(r'D:\wildfly\bin\service.exe', DESTINY_PATH+'\service.exe')
 with open(DESTINY_PATH+'\\run.bat', 'w+') as the_file:
     if template=='.node':
-        the_file.write('nodist global 15.14.0 && node dist/index.js')
+        the_file.write('SET PATH=C:\\wildfly-18.0.1.Final\\bin\\.data\\node-v22.13.0-win-x64;C:\\wildfly-18.0.1.Final\\bin\\.data\\node-v22.13.0-win-x64\\globals  && npm config set prefix C:\\wildfly-18.0.1.Final\\bin\\.data\\node-v22.13.0-win-x64\\globals && node dist/index.js')
     elif template=='.python':
         port=port and (' --port='+str(port)) or ''
         the_file.write('waitress-serve'+port+' wsqi:app')
