@@ -148,6 +148,7 @@ def start(service_id: str):
         "RUNNING",
     )
 
+
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
@@ -166,8 +167,8 @@ REM No heredar Nodist
 SET NODIST_PREFIX=
 SET NODE_PATH=
 
-REM PATH controlado para Reflex
-SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows
+REM Node 22 + herramientas basicas de Windows + PowerShell
+SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows;C:\Windows\System32\WindowsPowerShell\v1.0
 
 echo ==========================================
 echo Starting Reflex application
@@ -185,14 +186,6 @@ echo.
 echo NPM:
 where npm
 CALL "%NODE_HOME%\npm.cmd" --version
-
-echo.
-echo NPM prefix:
-CALL "%NODE_HOME%\npm.cmd" config get prefix
-
-echo.
-echo NPM cache:
-CALL "%NODE_HOME%\npm.cmd" config get cache
 
 echo ==========================================
 echo Cleaning Reflex frontend cache
@@ -223,7 +216,8 @@ exit /B %REFLEX_EXIT_CODE%
     )
 
     print(f"Created: {run_bat}")
-       
+
+    
 def create_service_xml(
     destination: Path,
     service_id: str,
