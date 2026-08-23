@@ -150,6 +150,7 @@ def start(service_id: str):
 
 
 
+
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
@@ -162,16 +163,27 @@ def create_run_bat(destination: Path):
 
 cd /d "{destination}"
 
+REM ==========================================
+REM UTF-8 para Python / Reflex / Rich
+REM ==========================================
+
+chcp 65001 >NUL
+
+SET PYTHONUTF8=1
+SET PYTHONIOENCODING=utf-8
+
+REM ==========================================
+REM Node aislado de Nodist
+REM ==========================================
+
 SET NODE_HOME={node_home}
 
-REM No heredar Nodist
 SET NODIST_PREFIX=
 SET NODE_PATH=
 
-REM Obligar a npm a mantener versiones exactas.
 SET NPM_CONFIG_SAVE_EXACT=true
 
-REM Node 22 + herramientas Windows necesarias.
+REM Node + comandos basicos Windows + PowerShell
 SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows;C:\Windows\System32\WindowsPowerShell\v1.0
 
 echo ==========================================
@@ -192,11 +204,11 @@ where npm
 CALL "%NODE_HOME%\npm.cmd" --version
 
 echo.
-echo NPM save-exact:
-echo %NPM_CONFIG_SAVE_EXACT%
+echo Python Encoding:
+".venv\Scripts\python.exe" -c "import sys; print(sys.stdout.encoding)"
 
 echo ==========================================
-echo Cleaning Reflex frontend
+echo Cleaning Reflex frontend cache
 echo ==========================================
 
 if exist ".web" (
@@ -224,6 +236,7 @@ exit /B %REFLEX_EXIT_CODE%
     )
 
     print(f"Created: {run_bat}")
+
     
 
 def create_service_xml(
