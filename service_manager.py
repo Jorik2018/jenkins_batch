@@ -185,6 +185,20 @@ echo NPM:
 where npm
 npm --version
 
+echo NPM prefix:
+npm config get prefix
+
+echo NPM cache:
+npm config get cache
+
+echo ==========================================
+echo Cleaning Reflex frontend cache
+echo ==========================================
+
+if exist ".web" (
+    rmdir /S /Q ".web"
+)
+
 echo ==========================================
 
 ".venv\Scripts\reflex.exe" run --env prod --loglevel debug
@@ -196,7 +210,7 @@ echo ==========================================
     )
 
     print(f"Created: {run_bat}")
-
+    
 def create_service_xml(
     destination: Path,
     service_id: str,
