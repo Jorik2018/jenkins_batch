@@ -162,7 +162,13 @@ def create_run_bat(destination: Path):
 cd /d "{destination}"
 
 SET NODE_HOME={node_home}
-SET PATH=%NODE_HOME%;%PATH%
+
+REM No heredar Nodist
+SET NODIST_PREFIX=
+SET NODE_PATH=
+
+REM PATH controlado para Reflex
+SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows
 
 echo ==========================================
 echo Starting Reflex application
@@ -172,17 +178,16 @@ echo Python:
 ".venv\Scripts\python.exe" --version
 
 echo Node:
+where node
 node --version
 
 echo NPM:
+where npm
 npm --version
-
-echo Reflex:
-".venv\Scripts\reflex.exe" --version
 
 echo ==========================================
 
-".venv\Scripts\reflex.exe" run --env prod
+".venv\Scripts\reflex.exe" run --env prod --loglevel debug
 """
 
     run_bat.write_text(
@@ -191,7 +196,6 @@ echo ==========================================
     )
 
     print(f"Created: {run_bat}")
-
 
 def create_service_xml(
     destination: Path,
