@@ -150,7 +150,6 @@ def start(service_id: str):
 
 
 
-
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
@@ -194,16 +193,19 @@ echo Python:
 ".venv\Scripts\python.exe" --version
 
 echo.
+
 echo Node:
 where node
 "%NODE_HOME%\node.exe" --version
 
 echo.
+
 echo NPM:
 where npm
 CALL "%NODE_HOME%\npm.cmd" --version
 
 echo.
+
 echo Python Encoding:
 ".venv\Scripts\python.exe" -c "import sys; print(sys.stdout.encoding)"
 
@@ -214,6 +216,24 @@ echo ==========================================
 if exist ".web" (
     rmdir /S /Q ".web"
 )
+
+echo ==========================================
+echo Initializing Reflex web directory
+echo ==========================================
+
+".venv\Scripts\reflex.exe" init
+
+echo ==========================================
+echo Copying custom MapRegistry
+echo ==========================================
+
+if not exist ".web\components" (
+    mkdir ".web\components"
+)
+
+copy /Y ^
+    "app\components\map_registry.jsx" ^
+    ".web\components\map_registry.jsx"
 
 echo ==========================================
 echo Launching Reflex
@@ -236,8 +256,8 @@ exit /B %REFLEX_EXIT_CODE%
     )
 
     print(f"Created: {run_bat}")
-
     
+
 
 def create_service_xml(
     destination: Path,
