@@ -148,7 +148,6 @@ def start(service_id: str):
         "RUNNING",
     )
 
-
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
@@ -161,13 +160,16 @@ def create_run_bat(destination: Path):
 
 cd /d "{destination}"
 
+REM ==========================================
+REM Entorno Node aislado de Nodist
+REM ==========================================
+
 SET NODE_HOME={node_home}
 
-REM No heredar Nodist
 SET NODIST_PREFIX=
 SET NODE_PATH=
 
-REM PATH controlado para Reflex
+REM No heredar el PATH global con Nodist.
 SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows
 
 echo ==========================================
@@ -177,19 +179,23 @@ echo ==========================================
 echo Python:
 ".venv\Scripts\python.exe" --version
 
+echo.
 echo Node:
 where node
-node --version
+"%NODE_HOME%\node.exe" --version
 
+echo.
 echo NPM:
 where npm
-npm --version
+"%NODE_HOME%\npm.cmd" --version
 
+echo.
 echo NPM prefix:
-npm config get prefix
+"%NODE_HOME%\npm.cmd" config get prefix
 
+echo.
 echo NPM cache:
-npm config get cache
+"%NODE_HOME%\npm.cmd" config get cache
 
 echo ==========================================
 echo Cleaning Reflex frontend cache
@@ -200,8 +206,18 @@ if exist ".web" (
 )
 
 echo ==========================================
+echo Launching Reflex
+echo ==========================================
 
 ".venv\Scripts\reflex.exe" run --env prod --loglevel debug
+
+SET REFLEX_EXIT_CODE=%ERRORLEVEL%
+
+echo ==========================================
+echo Reflex exited with code %REFLEX_EXIT_CODE%
+echo ==========================================
+
+exit /B %REFLEX_EXIT_CODE%
 """
 
     run_bat.write_text(
