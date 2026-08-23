@@ -152,10 +152,35 @@ def start(service_id: str):
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
+    node_home = (
+        r"C:\wildfly-18.0.1.Final\bin\.data"
+        r"\node-v22.13.0-win-x64"
+    )
+
     content = rf"""@echo off
+
 cd /d "{destination}"
 
-echo Starting Reflex application...
+SET NODE_HOME={node_home}
+SET PATH=%NODE_HOME%;%PATH%
+
+echo ==========================================
+echo Starting Reflex application
+echo ==========================================
+
+echo Python:
+".venv\Scripts\python.exe" --version
+
+echo Node:
+node --version
+
+echo NPM:
+npm --version
+
+echo Reflex:
+".venv\Scripts\reflex.exe" --version
+
+echo ==========================================
 
 ".venv\Scripts\reflex.exe" run --env prod
 """
