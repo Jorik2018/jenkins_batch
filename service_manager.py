@@ -149,6 +149,7 @@ def start(service_id: str):
     )
 
 
+
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
@@ -167,7 +168,10 @@ REM No heredar Nodist
 SET NODIST_PREFIX=
 SET NODE_PATH=
 
-REM Node 22 + herramientas basicas de Windows + PowerShell
+REM Obligar a npm a mantener versiones exactas.
+SET NPM_CONFIG_SAVE_EXACT=true
+
+REM Node 22 + herramientas Windows necesarias.
 SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows;C:\Windows\System32\WindowsPowerShell\v1.0
 
 echo ==========================================
@@ -187,8 +191,12 @@ echo NPM:
 where npm
 CALL "%NODE_HOME%\npm.cmd" --version
 
+echo.
+echo NPM save-exact:
+echo %NPM_CONFIG_SAVE_EXACT%
+
 echo ==========================================
-echo Cleaning Reflex frontend cache
+echo Cleaning Reflex frontend
 echo ==========================================
 
 if exist ".web" (
@@ -216,8 +224,8 @@ exit /B %REFLEX_EXIT_CODE%
     )
 
     print(f"Created: {run_bat}")
-
     
+
 def create_service_xml(
     destination: Path,
     service_id: str,
