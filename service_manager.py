@@ -160,16 +160,13 @@ def create_run_bat(destination: Path):
 
 cd /d "{destination}"
 
-REM ==========================================
-REM Entorno Node aislado de Nodist
-REM ==========================================
-
 SET NODE_HOME={node_home}
 
+REM No heredar Nodist
 SET NODIST_PREFIX=
 SET NODE_PATH=
 
-REM No heredar el PATH global con Nodist.
+REM PATH controlado para Reflex
 SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows
 
 echo ==========================================
@@ -187,15 +184,15 @@ where node
 echo.
 echo NPM:
 where npm
-"%NODE_HOME%\npm.cmd" --version
+CALL "%NODE_HOME%\npm.cmd" --version
 
 echo.
 echo NPM prefix:
-"%NODE_HOME%\npm.cmd" config get prefix
+CALL "%NODE_HOME%\npm.cmd" config get prefix
 
 echo.
 echo NPM cache:
-"%NODE_HOME%\npm.cmd" config get cache
+CALL "%NODE_HOME%\npm.cmd" config get cache
 
 echo ==========================================
 echo Cleaning Reflex frontend cache
@@ -226,7 +223,7 @@ exit /B %REFLEX_EXIT_CODE%
     )
 
     print(f"Created: {run_bat}")
-    
+       
 def create_service_xml(
     destination: Path,
     service_id: str,
