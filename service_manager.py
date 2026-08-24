@@ -149,7 +149,6 @@ def start(service_id: str):
     )
 
 
-
 def create_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
@@ -179,7 +178,6 @@ SET NODE_HOME={node_home}
 
 SET NODIST_PREFIX=
 SET NODE_PATH=
-
 SET NPM_CONFIG_SAVE_EXACT=true
 
 REM Node + comandos basicos Windows + PowerShell
@@ -209,23 +207,9 @@ echo.
 echo Python Encoding:
 ".venv\Scripts\python.exe" -c "import sys; print(sys.stdout.encoding)"
 
-echo ==========================================
-echo Cleaning Reflex frontend cache
-echo ==========================================
-
-if exist ".web" (
-    rmdir /S /Q ".web"
-)
-
-echo ==========================================
-echo Initializing Reflex web directory
-echo ==========================================
-
-".venv\Scripts\reflex.exe" init
-
-echo ==========================================
-echo Copying custom MapRegistry
-echo ==========================================
+REM ==========================================
+REM Custom MapRegistry
+REM ==========================================
 
 if not exist ".web\components" (
     mkdir ".web\components"
@@ -234,6 +218,11 @@ if not exist ".web\components" (
 copy /Y ^
     "app\components\map_registry.jsx" ^
     ".web\components\map_registry.jsx"
+
+if errorlevel 1 (
+    echo ERROR: Could not copy map_registry.jsx
+    exit /B 1
+)
 
 echo ==========================================
 echo Launching Reflex
@@ -256,8 +245,6 @@ exit /B %REFLEX_EXIT_CODE%
     )
 
     print(f"Created: {run_bat}")
-    
-
 
 def create_service_xml(
     destination: Path,
