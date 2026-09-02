@@ -149,7 +149,7 @@ def start(service_id: str):
     )
 
 
-def create_run_bat(destination: Path):
+def create_reflex_run_bat(destination: Path):
     run_bat = destination / "run.bat"
 
     node_home = (
@@ -246,6 +246,67 @@ exit /B %REFLEX_EXIT_CODE%
 
     print(f"Created: {run_bat}")
 
+def create_streamlit_run_bat(
+    destination: Path,
+    port: int = 7878,
+    base_path: str = "streamlit",
+    app_file: str = "streamlit_erp/app.py",
+):
+    run_bat = destination / "run.bat"
+
+    content = rf"""@echo off
+
+cd /d "{destination}"
+
+REM ==========================================
+REM UTF-8
+REM ==========================================
+
+chcp 65001 >NUL
+
+SET PYTHONUTF8=1
+SET PYTHONIOENCODING=utf-8
+
+echo ==========================================
+echo Starting Streamlit application
+echo ==========================================
+
+echo Python:
+".venv\Scripts\python.exe" --version
+
+echo.
+
+echo Streamlit:
+".venv\Scripts\streamlit.exe" version
+
+echo.
+
+echo ==========================================
+echo Launching Streamlit
+echo ==========================================
+
+".venv\Scripts\streamlit.exe" run "{app_file}" ^
+    --server.address=127.0.0.1 ^
+    --server.port={port} ^
+    --server.baseUrlPath={base_path} ^
+    --server.headless=true
+
+SET STREAMLIT_EXIT_CODE=%ERRORLEVEL%
+
+echo ==========================================
+echo Streamlit exited with code %STREAMLIT_EXIT_CODE%
+echo ==========================================
+
+exit /B %STREAMLIT_EXIT_CODE%
+"""
+
+    run_bat.write_text(
+        content,
+        encoding="utf-8",
+    )
+
+    print(f"Created Streamlit runner: {run_bat}")
+
 def create_service_xml(
     destination: Path,
     service_id: str,
@@ -280,12 +341,38 @@ def create_service_xml(
 
     print(f"Created: {service_xml}")
 
+def create_run_bat(
+    destination: Path,
+    app_type: str,
+    port: int = 7878,
+    base_path: str = "streamlit",
+    app_file: str = "streamlit_erp/app.py",
+):
+    if app_type == "reflex":
+        create_reflex_run_bat(destination)
 
+    elif app_type == "streamlit":
+        create_streamlit_run_bat(
+            destination=destination,
+            port=port,
+            base_path=base_path,
+            app_file=app_file,
+        )
+
+    else:
+        raise RuntimeError(
+            f"Unsupported application type: {app_type}"
+        )
+    
 def install(
     service_id: str,
     destination: Path,
     service_name: str | None = None,
     description: str | None = None,
+    app_type: str = "reflex",
+    port: int = 7878,
+    base_path: str = "streamlit",
+    app_file: str = "streamlit_erp/app.py",
 ):
     destination = destination.resolve()
 
@@ -320,7 +407,13 @@ def install(
         f"Copied wrapper: {wrapper_destination}"
     )
 
-    create_run_bat(destination)
+    create_run_bat(
+        destination=destination,
+        app_type=app_type,
+        port=port,
+        base_path=base_path,
+        app_file=app_file,
+    )
 
     create_service_xml(
         destination,
@@ -410,10 +503,9 @@ def restart(service_id: str):
     stop(service_id)
     start(service_id)
 
-
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Windows service manager for Reflex apps."
+        description="Windows service manager for Python web apps."
     )
 
     sub = parser.add_subparsers(
@@ -452,6 +544,36 @@ def parse_args():
         "--description"
     )
 
+    install_parser.add_argument(
+        "--type",
+        dest="app_type",
+        choices=[
+            "reflex",
+            "streamlit",
+        ],
+        default="reflex",
+        help="Application type. Default: reflex",
+    )
+
+    install_parser.add_argument(
+        "--port",
+        type=int,
+        default=7878,
+        help="Port used by the application",
+    )
+
+    install_parser.add_argument(
+        "--base-path",
+        default="streamlit",
+        help="Base URL path for Streamlit",
+    )
+
+    install_parser.add_argument(
+        "--app-file",
+        default="streamlit_erp/app.py",
+        help="Streamlit application entry point",
+    )
+
     uninstall_parser = sub.add_parser(
         "uninstall"
     )
@@ -466,7 +588,6 @@ def parse_args():
     )
 
     return parser.parse_args()
-
 
 def main():
     args = parse_args()
@@ -486,10 +607,14 @@ def main():
 
         elif args.command == "install":
             install(
-                args.service_id,
-                args.destination,
-                args.name,
-                args.description,
+                service_id=args.service_id,
+                destination=args.destination,
+                service_name=args.name,
+                description=args.description,
+                app_type=args.app_type,
+                port=args.port,
+                base_path=args.base_path,
+                app_file=args.app_file,
             )
 
         elif args.command == "uninstall":
@@ -502,7 +627,6 @@ def main():
         print()
         print("ERROR:", exc)
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
