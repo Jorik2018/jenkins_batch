@@ -148,6 +148,54 @@ def start(service_id: str):
         "RUNNING",
     )
 
+def create_flask_run_bat(
+    destination: Path,
+    port: int = 5000,
+    host: str = "0.0.0.0",
+    wsgi_app: str = "app:app",
+):
+    run_bat = destination / "run.bat"
+
+    content = rf"""@echo off
+
+cd /d "{destination}"
+
+chcp 65001 >NUL
+
+SET PYTHONUTF8=1
+SET PYTHONIOENCODING=utf-8
+
+echo ==========================================
+echo Starting Flask application
+echo ==========================================
+
+echo Python:
+".venv\Scripts\python.exe" --version
+
+echo.
+echo ==========================================
+echo Launching Waitress
+echo ==========================================
+
+".venv\Scripts\python.exe" -m waitress ^
+    --listen={host}:{port} ^
+    {wsgi_app}
+
+SET APP_EXIT_CODE=%ERRORLEVEL%
+
+echo ==========================================
+echo Flask application exited with code %APP_EXIT_CODE%
+echo ==========================================
+
+exit /B %APP_EXIT_CODE%
+"""
+
+    run_bat.write_text(
+        content,
+        encoding="utf-8",
+    )
+
+    print(f"Created Flask runner: {run_bat}")
 
 def create_reflex_run_bat(destination: Path):
     run_bat = destination / "run.bat"
@@ -347,6 +395,8 @@ def create_run_bat(
     port: int = 7878,
     base_path: str = "streamlit",
     app_file: str = "streamlit_erp/app.py",
+    host: str = "0.0.0.0",
+    wsgi_app: str = "app:app",
 ):
     if app_type == "reflex":
         create_reflex_run_bat(destination)
@@ -358,7 +408,13 @@ def create_run_bat(
             base_path=base_path,
             app_file=app_file,
         )
-
+    elif app_type == "flask":
+        create_flask_run_bat(
+            destination=destination,
+            port=port,
+            host=host,
+            wsgi_app=wsgi_app,
+        )
     else:
         raise RuntimeError(
             f"Unsupported application type: {app_type}"
@@ -373,6 +429,8 @@ def install(
     port: int = 7878,
     base_path: str = "streamlit",
     app_file: str = "streamlit_erp/app.py",
+    host: str = "0.0.0.0",
+    wsgi_app: str = "app:app",
 ):
     destination = destination.resolve()
 
@@ -413,6 +471,8 @@ def install(
         port=port,
         base_path=base_path,
         app_file=app_file,
+        host=host,
+        wsgi_app=wsgi_app,
     )
 
     create_service_xml(
@@ -574,6 +634,18 @@ def parse_args():
         help="Streamlit application entry point",
     )
 
+    install_parser.add_argument(
+        "--host",
+        default="0.0.0.0",
+        help="Host used by the application",
+    )
+
+    install_parser.add_argument(
+        "--wsgi-app",
+        default="app:app",
+        help="WSGI application entry point, e.g. app:app",
+    )
+
     uninstall_parser = sub.add_parser(
         "uninstall"
     )
@@ -615,6 +687,8 @@ def main():
                 port=args.port,
                 base_path=args.base_path,
                 app_file=args.app_file,
+                host=args.host,
+                wsgi_app=args.wsgi_app,
             )
 
         elif args.command == "uninstall":
