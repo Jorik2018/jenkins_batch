@@ -610,6 +610,7 @@ def parse_args():
         choices=[
             "reflex",
             "streamlit",
+            "flask",
         ],
         default="reflex",
         help="Application type. Default: reflex",
