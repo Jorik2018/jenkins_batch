@@ -355,6 +355,46 @@ exit /B %STREAMLIT_EXIT_CODE%
 
     print(f"Created Streamlit runner: {run_bat}")
 
+def create_go_run_bat(
+    destination: Path,
+    executable: str,
+):
+    run_bat = destination / "run.bat"
+
+    content = rf"""@echo off
+
+cd /d "{destination}"
+
+echo ==========================================
+echo Starting Go application
+echo ==========================================
+
+echo Executable:
+echo {executable}
+
+if not exist "{executable}" (
+    echo ERROR: Executable not found: {executable}
+    exit /B 1
+)
+
+"{executable}"
+
+SET APP_EXIT_CODE=%ERRORLEVEL%
+
+echo ==========================================
+echo Go application exited with code %APP_EXIT_CODE%
+echo ==========================================
+
+exit /B %APP_EXIT_CODE%
+"""
+
+    run_bat.write_text(
+        content,
+        encoding="utf-8",
+    )
+
+    print(f"Created Go runner: {run_bat}")
+
 def create_service_xml(
     destination: Path,
     service_id: str,
@@ -397,6 +437,7 @@ def create_run_bat(
     app_file: str = "streamlit_erp/app.py",
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
+    executable: str | None = None,
 ):
     if app_type == "reflex":
         create_reflex_run_bat(destination)
@@ -415,6 +456,16 @@ def create_run_bat(
             host=host,
             wsgi_app=wsgi_app,
         )
+    elif app_type == "go":
+        if not executable:
+            raise RuntimeError(
+                "--executable is required for Go applications"
+            )
+
+        create_go_run_bat(
+            destination=destination,
+            executable=executable,
+        )
     else:
         raise RuntimeError(
             f"Unsupported application type: {app_type}"
@@ -431,6 +482,7 @@ def install(
     app_file: str = "streamlit_erp/app.py",
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
+    executable: str | None = None,
 ):
     destination = destination.resolve()
 
@@ -473,6 +525,7 @@ def install(
         app_file=app_file,
         host=host,
         wsgi_app=wsgi_app,
+        executable=executable,
     )
 
     create_service_xml(
@@ -611,6 +664,7 @@ def parse_args():
             "reflex",
             "streamlit",
             "flask",
+            "go",
         ],
         default="reflex",
         help="Application type. Default: reflex",
@@ -645,6 +699,11 @@ def parse_args():
         "--wsgi-app",
         default="app:app",
         help="WSGI application entry point, e.g. app:app",
+    )
+
+    install_parser.add_argument(
+        "--executable",
+        help="Executable file for Go applications, e.g. my-api.exe",
     )
 
     uninstall_parser = sub.add_parser(
@@ -690,6 +749,7 @@ def main():
                 app_file=args.app_file,
                 host=args.host,
                 wsgi_app=args.wsgi_app,
+                executable=args.executable,
             )
 
         elif args.command == "uninstall":
