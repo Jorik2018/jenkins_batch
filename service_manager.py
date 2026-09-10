@@ -358,6 +358,7 @@ exit /B %STREAMLIT_EXIT_CODE%
 def create_go_run_bat(
     destination: Path,
     executable: str,
+    port: int,
 ):
     run_bat = destination / "run.bat"
 
@@ -365,12 +366,14 @@ def create_go_run_bat(
 
 cd /d "{destination}"
 
+SET PORT={port}
+
 echo ==========================================
 echo Starting Go application
 echo ==========================================
-
-echo Executable:
-echo {executable}
+echo Executable: {executable}
+echo Port: %PORT%
+echo ==========================================
 
 if not exist "{executable}" (
     echo ERROR: Executable not found: {executable}
@@ -381,9 +384,7 @@ if not exist "{executable}" (
 
 SET APP_EXIT_CODE=%ERRORLEVEL%
 
-echo ==========================================
 echo Go application exited with code %APP_EXIT_CODE%
-echo ==========================================
 
 exit /B %APP_EXIT_CODE%
 """
