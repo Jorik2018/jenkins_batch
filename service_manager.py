@@ -466,6 +466,7 @@ def create_run_bat(
         create_go_run_bat(
             destination=destination,
             executable=executable,
+            port=port,
         )
     else:
         raise RuntimeError(
