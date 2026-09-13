@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 SERVICE_WRAPPER = Path(r"D:\wildfly\bin\service.exe")
 
@@ -140,21 +141,82 @@ def start(service_id: str):
         "RUNNING",
     )
 
+def parse_env_vars(items: list[str]) -> dict[str, str]:
+    result: dict[str, str] = {}
+
+    for item in items:
+        if "=" not in item:
+            raise RuntimeError(
+                f"Invalid --env value: {item}. Expected NAME=VALUE"
+            )
+
+        name, value = item.split("=", 1)
+
+        name = name.strip()
+
+        if not name:
+            raise RuntimeError(
+                f"Invalid --env value: {item}"
+            )
+
+        result[name] = value
+
+    return result
+
 def create_service_xml(
     destination: Path,
     service_id: str,
     service_name: str,
     description: str,
+    env_vars: list[str] | None = None,
 ):
+    env_vars = env_vars or []
+
+    def xml_attr(value: str) -> str:
+        return escape(
+            value,
+            {
+                '"': "&quot;",
+                "'": "&apos;",
+            },
+        )
+
+    env_lines = []
+
+    for item in env_vars:
+        if "=" not in item:
+            raise RuntimeError(
+                f"Invalid environment variable: {item}. "
+                "Expected NAME=VALUE"
+            )
+
+        name, value = item.split("=", 1)
+
+        name = name.strip()
+
+        if not name:
+            raise RuntimeError(
+                f"Invalid environment variable: {item}"
+            )
+
+        env_lines.append(
+            f'  <env name="{xml_attr(name)}" '
+            f'value="{xml_attr(value)}" />'
+        )
+
+    env_xml = "\n".join(env_lines)
+
     xml = f"""<service>
-  <id>{service_id}</id>
-  <name>{service_name}</name>
-  <description>{description}</description>
+  <id>{xml_attr(service_id)}</id>
+  <name>{xml_attr(service_name)}</name>
+  <description>{xml_attr(description)}</description>
 
   <executable>cmd.exe</executable>
-  <arguments>/c "{destination}\\run.bat"</arguments>
+  <arguments>/c "{xml_attr(str(destination))}\\run.bat"</arguments>
 
-  <workingdirectory>{destination}</workingdirectory>
+  <workingdirectory>{xml_attr(str(destination))}</workingdirectory>
+
+{env_xml}
 
   <logmode>rotate</logmode>
 
@@ -184,6 +246,7 @@ def create_runner(
     wsgi_app: str = "app:app",
     executable: str | None = None,
     database_url: str | None = None,
+    env_vars: list[str] | None = None,
 ):
     if app_type == "reflex":
         from .runners.reflex import create_runner
@@ -219,6 +282,7 @@ def create_runner(
             executable=executable,
             port=port,
             database_url=database_url,
+            env_vars=env_vars or [],
         )
     else:
         raise RuntimeError(
@@ -238,8 +302,10 @@ def install(
     wsgi_app: str = "app:app",
     executable: str | None = None,
     database_url: str | None = None,
+    env_vars: list[str] | None = None,
 ):
     destination = destination.resolve()
+    env_vars = env_vars or []
 
     if not destination.exists():
         raise RuntimeError(
@@ -281,7 +347,8 @@ def install(
         host=host,
         wsgi_app=wsgi_app,
         executable=executable,
-        database_url=database_url,
+        database_url=database_url
+        env_vars=env_vars or [],
     )
 
     create_service_xml(
@@ -289,6 +356,7 @@ def install(
         service_id,
         service_name,
         description,
+        env_vars=env_vars or [],
     )
 
     if service_exists(service_id):
@@ -417,10 +485,10 @@ def parse_args():
     )
 
     install_parser.add_argument(
-        "--port",
-        type=int,
-        default=7878,
-        help="Port used by the application",
+        "--env",
+        action="append",
+        default=[],
+        help="Environment variable NAME=VALUE. Can be repeated.",
     )
 
     install_parser.add_argument(

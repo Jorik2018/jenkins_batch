@@ -1,10 +1,10 @@
 from pathlib import Path
 
+
 def create_runner(
     destination: Path,
     executable: str,
     port: int,
-    database_url: str,
 ):
     run_bat = destination / "run.bat"
 
@@ -13,13 +13,13 @@ def create_runner(
 cd /d "{destination}"
 
 SET PORT={port}
-SET DATABASE_URL={database_url}
 
 echo ==========================================
 echo Starting Rust application
 echo ==========================================
 echo Executable: {executable}
 echo Port: %PORT%
+echo Vault: %VAULT_ADDR%
 echo ==========================================
 
 if not exist "{executable}" (
