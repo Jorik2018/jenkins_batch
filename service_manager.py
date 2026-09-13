@@ -247,31 +247,31 @@ def create_runner(
     env_vars: list[str] | None = None,
 ):
     if app_type == "reflex":
-        from .runners.reflex import create_runner
+        from runners.reflex import create_runner
         create_runner(destination)
 
     elif app_type == "streamlit":
-        from .runners.streamlit import create_runner
+        from runners.streamlit import create_runner
         create_runner(
             destination=destination,
             base_path=base_path,
             app_file=app_file,
         )
     elif app_type == "flask":
-        from .runners.flask import create_runner
+        from runners.flask import create_runner
         create_runner(
             destination=destination,
             host=host,
             wsgi_app=wsgi_app,
         )
     elif app_type == "go":
-        from .runners.flask import create_runner
+        from runners.flask import create_runner
         create_runner(
             destination=destination,
             executable=executable
         )
     elif app_type == "rust":
-        from .runners.rust import create_runner
+        from runners.rust import create_runner
         create_runner(
             destination=destination,
             executable=executable,
