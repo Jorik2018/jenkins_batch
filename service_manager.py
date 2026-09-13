@@ -329,8 +329,7 @@ def install(
         app_file=app_file,
         host=host,
         wsgi_app=wsgi_app,
-        executable=executable,
-        env_vars=env_vars or [],
+        executable=executable
     )
 
     create_service_xml(
