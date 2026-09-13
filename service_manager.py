@@ -170,7 +170,11 @@ def create_service_xml(
     description: str,
     env_vars: list[str] | None = None,
 ):
+    print("DEBUG create_service_xml env_vars:", repr(env_vars))
+
     env_vars = env_vars or []
+
+    print("DEBUG normalized env_vars:", repr(env_vars))
 
     def xml_attr(value: str) -> str:
         return escape(
@@ -297,6 +301,8 @@ def install(
 ):
     destination = destination.resolve()
     env_vars = env_vars or []
+
+    print("DEBUG install env_vars:", repr(env_vars))
 
     if not destination.exists():
         raise RuntimeError(
