@@ -278,8 +278,7 @@ def create_runner(
         from runners.rust import create_runner
         create_runner(
             destination=destination,
-            executable=executable,
-            env_vars=env_vars or [],
+            executable=executable
         )
     else:
         raise RuntimeError(
