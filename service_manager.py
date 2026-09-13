@@ -558,6 +558,7 @@ def main():
                 host=args.host,
                 wsgi_app=args.wsgi_app,
                 executable=args.executable,
+                env_vars=args.env,
             )
 
         elif args.command == "uninstall":
@@ -570,6 +571,7 @@ def main():
         print()
         print("ERROR:", exc)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
