@@ -5,9 +5,7 @@ import sys
 import time
 from pathlib import Path
 
-
 SERVICE_WRAPPER = Path(r"D:\wildfly\bin\service.exe")
-
 
 def execute(command: list[str], cwd: Path | None = None, check: bool = False):
     print()
@@ -37,14 +35,11 @@ def execute(command: list[str], cwd: Path | None = None, check: bool = False):
 
     return result
 
-
 def service_exists(service_id: str) -> bool:
     result = execute(
         ["sc", "query", service_id]
     )
-
     return result.returncode == 0
-
 
 def service_state(service_id: str) -> str | None:
     result = execute(
@@ -67,7 +62,6 @@ def service_state(service_id: str) -> str | None:
             return state
 
     return "UNKNOWN"
-
 
 def wait_for_state(
     service_id: str,
@@ -97,7 +91,6 @@ def wait_for_state(
         f"{expected_state} after {timeout} seconds."
     )
 
-
 def stop(service_id: str):
     if not service_exists(service_id):
         print(
@@ -123,7 +116,6 @@ def stop(service_id: str):
         "STOPPED",
     )
 
-
 def start(service_id: str):
     if not service_exists(service_id):
         raise RuntimeError(
@@ -147,254 +139,6 @@ def start(service_id: str):
         service_id,
         "RUNNING",
     )
-
-def create_flask_run_bat(
-    destination: Path,
-    port: int = 5000,
-    host: str = "0.0.0.0",
-    wsgi_app: str = "app:app",
-):
-    run_bat = destination / "run.bat"
-
-    content = rf"""@echo off
-
-cd /d "{destination}"
-
-chcp 65001 >NUL
-
-SET PYTHONUTF8=1
-SET PYTHONIOENCODING=utf-8
-
-echo ==========================================
-echo Starting Flask application
-echo ==========================================
-
-echo Python:
-".venv\Scripts\python.exe" --version
-
-echo.
-echo ==========================================
-echo Launching Waitress
-echo ==========================================
-
-".venv\Scripts\python.exe" -m waitress ^
-    --listen={host}:{port} ^
-    {wsgi_app}
-
-SET APP_EXIT_CODE=%ERRORLEVEL%
-
-echo ==========================================
-echo Flask application exited with code %APP_EXIT_CODE%
-echo ==========================================
-
-exit /B %APP_EXIT_CODE%
-"""
-
-    run_bat.write_text(
-        content,
-        encoding="utf-8",
-    )
-
-    print(f"Created Flask runner: {run_bat}")
-
-def create_reflex_run_bat(destination: Path):
-    run_bat = destination / "run.bat"
-
-    node_home = (
-        r"C:\wildfly-18.0.1.Final\bin\.data"
-        r"\node-v22.13.0-win-x64"
-    )
-
-    content = rf"""@echo off
-
-cd /d "{destination}"
-
-REM ==========================================
-REM UTF-8 para Python / Reflex / Rich
-REM ==========================================
-
-chcp 65001 >NUL
-
-SET PYTHONUTF8=1
-SET PYTHONIOENCODING=utf-8
-
-REM ==========================================
-REM Node aislado de Nodist
-REM ==========================================
-
-SET NODE_HOME={node_home}
-
-SET NODIST_PREFIX=
-SET NODE_PATH=
-SET NPM_CONFIG_SAVE_EXACT=true
-
-REM Node + comandos basicos Windows + PowerShell
-SET PATH=%NODE_HOME%;C:\Windows\System32;C:\Windows;C:\Windows\System32\WindowsPowerShell\v1.0
-
-echo ==========================================
-echo Starting Reflex application
-echo ==========================================
-
-echo Python:
-".venv\Scripts\python.exe" --version
-
-echo.
-
-echo Node:
-where node
-"%NODE_HOME%\node.exe" --version
-
-echo.
-
-echo NPM:
-where npm
-CALL "%NODE_HOME%\npm.cmd" --version
-
-echo.
-
-echo Python Encoding:
-".venv\Scripts\python.exe" -c "import sys; print(sys.stdout.encoding)"
-
-REM ==========================================
-REM Custom MapRegistry
-REM ==========================================
-
-if not exist ".web\components" (
-    mkdir ".web\components"
-)
-
-copy /Y ^
-    "app\components\map_registry.jsx" ^
-    ".web\components\map_registry.jsx"
-
-if errorlevel 1 (
-    echo ERROR: Could not copy map_registry.jsx
-    exit /B 1
-)
-
-echo ==========================================
-echo Launching Reflex
-echo ==========================================
-
-".venv\Scripts\reflex.exe" run --env prod --loglevel debug
-
-SET REFLEX_EXIT_CODE=%ERRORLEVEL%
-
-echo ==========================================
-echo Reflex exited with code %REFLEX_EXIT_CODE%
-echo ==========================================
-
-exit /B %REFLEX_EXIT_CODE%
-"""
-
-    run_bat.write_text(
-        content,
-        encoding="utf-8",
-    )
-
-    print(f"Created: {run_bat}")
-
-def create_streamlit_run_bat(
-    destination: Path,
-    port: int = 7878,
-    base_path: str = "streamlit",
-    app_file: str = "streamlit_erp/app.py",
-):
-    run_bat = destination / "run.bat"
-
-    content = rf"""@echo off
-
-cd /d "{destination}"
-
-REM ==========================================
-REM UTF-8
-REM ==========================================
-
-chcp 65001 >NUL
-
-SET PYTHONUTF8=1
-SET PYTHONIOENCODING=utf-8
-
-echo ==========================================
-echo Starting Streamlit application
-echo ==========================================
-
-echo Python:
-".venv\Scripts\python.exe" --version
-
-echo.
-
-echo Streamlit:
-".venv\Scripts\streamlit.exe" version
-
-echo.
-
-echo ==========================================
-echo Launching Streamlit
-echo ==========================================
-
-".venv\Scripts\streamlit.exe" run "{app_file}" ^
-    --server.address=127.0.0.1 ^
-    --server.port={port} ^
-    --server.baseUrlPath={base_path} ^
-    --server.headless=true
-
-SET STREAMLIT_EXIT_CODE=%ERRORLEVEL%
-
-echo ==========================================
-echo Streamlit exited with code %STREAMLIT_EXIT_CODE%
-echo ==========================================
-
-exit /B %STREAMLIT_EXIT_CODE%
-"""
-
-    run_bat.write_text(
-        content,
-        encoding="utf-8",
-    )
-
-    print(f"Created Streamlit runner: {run_bat}")
-
-def create_go_run_bat(
-    destination: Path,
-    executable: str,
-    port: int,
-):
-    run_bat = destination / "run.bat"
-
-    content = rf"""@echo off
-
-cd /d "{destination}"
-
-SET PORT={port}
-
-echo ==========================================
-echo Starting Go application
-echo ==========================================
-echo Executable: {executable}
-echo Port: %PORT%
-echo ==========================================
-
-if not exist "{executable}" (
-    echo ERROR: Executable not found: {executable}
-    exit /B 1
-)
-
-"{executable}"
-
-SET APP_EXIT_CODE=%ERRORLEVEL%
-
-echo Go application exited with code %APP_EXIT_CODE%
-
-exit /B %APP_EXIT_CODE%
-"""
-
-    run_bat.write_text(
-        content,
-        encoding="utf-8",
-    )
-
-    print(f"Created Go runner: {run_bat}")
 
 def create_service_xml(
     destination: Path,
@@ -430,7 +174,7 @@ def create_service_xml(
 
     print(f"Created: {service_xml}")
 
-def create_run_bat(
+def create_runner(
     destination: Path,
     app_type: str,
     port: int = 7878,
@@ -439,34 +183,42 @@ def create_run_bat(
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
     executable: str | None = None,
+    database_url: str | None = None,
 ):
     if app_type == "reflex":
-        create_reflex_run_bat(destination)
+        from .runners.reflex import create_runner
+        create_runner(destination)
 
     elif app_type == "streamlit":
-        create_streamlit_run_bat(
+        from .runners.streamlit import create_runner
+        create_runner(
             destination=destination,
             port=port,
             base_path=base_path,
             app_file=app_file,
         )
     elif app_type == "flask":
-        create_flask_run_bat(
+        from .runners.flask import create_runner
+        create_runner(
             destination=destination,
             port=port,
             host=host,
             wsgi_app=wsgi_app,
         )
     elif app_type == "go":
-        if not executable:
-            raise RuntimeError(
-                "--executable is required for Go applications"
-            )
-
-        create_go_run_bat(
+        from .runners.flask import create_runner
+        create_runner(
             destination=destination,
             executable=executable,
             port=port,
+        )
+    elif app_type == "rust":
+        from .runners.rust import create_runner
+        create_runner(
+            destination=destination,
+            executable=executable,
+            port=port,
+            database_url=database_url,
         )
     else:
         raise RuntimeError(
@@ -476,15 +228,16 @@ def create_run_bat(
 def install(
     service_id: str,
     destination: Path,
-    service_name: str | None = None,
-    description: str | None = None,
-    app_type: str = "reflex",
-    port: int = 7878,
+    service_name: str,
+    description: str,
+    app_type: str,
+    port: int,
     base_path: str = "streamlit",
     app_file: str = "streamlit_erp/app.py",
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
     executable: str | None = None,
+    database_url: str | None = None,
 ):
     destination = destination.resolve()
 
@@ -519,7 +272,7 @@ def install(
         f"Copied wrapper: {wrapper_destination}"
     )
 
-    create_run_bat(
+    create_runner(
         destination=destination,
         app_type=app_type,
         port=port,
@@ -528,6 +281,7 @@ def install(
         host=host,
         wsgi_app=wsgi_app,
         executable=executable,
+        database_url=database_url,
     )
 
     create_service_xml(
@@ -570,7 +324,6 @@ def install(
         f'Service "{service_id}" installed.'
     )
 
-
 def uninstall(service_id: str, destination: Path):
     if not service_exists(service_id):
         print(
@@ -599,7 +352,6 @@ def uninstall(service_id: str, destination: Path):
         f'Service "{service_id}" uninstalled.'
     )
 
-
 def status(service_id: str):
     state = service_state(service_id)
 
@@ -612,7 +364,6 @@ def status(service_id: str):
     print(
         f"{service_id}: {state}"
     )
-
 
 def restart(service_id: str):
     stop(service_id)
@@ -662,14 +413,7 @@ def parse_args():
     install_parser.add_argument(
         "--type",
         dest="app_type",
-        choices=[
-            "reflex",
-            "streamlit",
-            "flask",
-            "go",
-        ],
-        default="reflex",
-        help="Application type. Default: reflex",
+        help="Application type",
     )
 
     install_parser.add_argument(
@@ -752,6 +496,7 @@ def main():
                 host=args.host,
                 wsgi_app=args.wsgi_app,
                 executable=args.executable,
+                database_url=args.database_url,
             )
 
         elif args.command == "uninstall":
