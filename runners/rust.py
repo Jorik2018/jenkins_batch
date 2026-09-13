@@ -4,15 +4,26 @@ from pathlib import Path
 def create_runner(
     destination: Path,
     executable: str,
-    port: int,
+    env_vars: list[str],
 ):
     run_bat = destination / "run.bat"
+
+    env_lines = []
+
+    for item in env_vars:
+        if "=" not in item:
+            continue
+
+        key, value = item.split("=", 1)
+        env_lines.append(f'SET "{key}={value}"')
+
+    env_block = "\n".join(env_lines)
 
     content = rf"""@echo off
 
 cd /d "{destination}"
 
-SET PORT={port}
+{env_block}
 
 echo ==========================================
 echo Starting Rust application
