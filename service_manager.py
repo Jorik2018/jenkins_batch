@@ -168,13 +168,12 @@ def create_service_xml(
     service_id: str,
     service_name: str,
     description: str,
+    executable: str,
     env_vars: list[str] | None = None,
 ):
     print("DEBUG create_service_xml env_vars:", repr(env_vars))
 
     env_vars = env_vars or []
-
-    print("DEBUG normalized env_vars:", repr(env_vars))
 
     def xml_attr(value: str) -> str:
         return escape(
@@ -195,7 +194,6 @@ def create_service_xml(
             )
 
         name, value = item.split("=", 1)
-
         name = name.strip()
 
         if not name:
@@ -210,13 +208,14 @@ def create_service_xml(
 
     env_xml = "\n".join(env_lines)
 
+    executable_path = destination / executable
+
     xml = f"""<service>
   <id>{xml_attr(service_id)}</id>
   <name>{xml_attr(service_name)}</name>
   <description>{xml_attr(description)}</description>
 
-  <executable>cmd.exe</executable>
-  <arguments>/c "{xml_attr(str(destination))}\\run.bat"</arguments>
+  <executable>{xml_attr(str(executable_path))}</executable>
 
   <workingdirectory>{xml_attr(str(destination))}</workingdirectory>
 
@@ -239,7 +238,7 @@ def create_service_xml(
     )
 
     print(f"Created: {service_xml}")
-
+    
 def create_runner(
     destination: Path,
     app_type: str,
