@@ -338,6 +338,7 @@ def install(
         service_name,
         description,
         env_vars=env_vars or [],
+        executable=executable
     )
 
     if service_exists(service_id):
