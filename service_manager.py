@@ -239,7 +239,6 @@ def create_service_xml(
 def create_runner(
     destination: Path,
     app_type: str,
-    port: int = 7878,
     base_path: str = "streamlit",
     app_file: str = "streamlit_erp/app.py",
     host: str = "0.0.0.0",
@@ -255,7 +254,6 @@ def create_runner(
         from .runners.streamlit import create_runner
         create_runner(
             destination=destination,
-            port=port,
             base_path=base_path,
             app_file=app_file,
         )
@@ -263,7 +261,6 @@ def create_runner(
         from .runners.flask import create_runner
         create_runner(
             destination=destination,
-            port=port,
             host=host,
             wsgi_app=wsgi_app,
         )
@@ -271,15 +268,13 @@ def create_runner(
         from .runners.flask import create_runner
         create_runner(
             destination=destination,
-            executable=executable,
-            port=port,
+            executable=executable
         )
     elif app_type == "rust":
         from .runners.rust import create_runner
         create_runner(
             destination=destination,
             executable=executable,
-            port=port,
             env_vars=env_vars or [],
         )
     else:
@@ -293,7 +288,6 @@ def install(
     service_name: str,
     description: str,
     app_type: str,
-    port: int,
     base_path: str = "streamlit",
     app_file: str = "streamlit_erp/app.py",
     host: str = "0.0.0.0",
@@ -338,7 +332,6 @@ def install(
     create_runner(
         destination=destination,
         app_type=app_type,
-        port=port,
         base_path=base_path,
         app_file=app_file,
         host=host,
@@ -554,7 +547,6 @@ def main():
                 service_name=args.name,
                 description=args.description,
                 app_type=args.app_type,
-                port=args.port,
                 base_path=args.base_path,
                 app_file=args.app_file,
                 host=args.host,
