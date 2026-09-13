@@ -245,7 +245,6 @@ def create_runner(
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
     executable: str | None = None,
-    database_url: str | None = None,
     env_vars: list[str] | None = None,
 ):
     if app_type == "reflex":
@@ -281,7 +280,6 @@ def create_runner(
             destination=destination,
             executable=executable,
             port=port,
-            database_url=database_url,
             env_vars=env_vars or [],
         )
     else:
@@ -301,7 +299,6 @@ def install(
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
     executable: str | None = None,
-    database_url: str | None = None,
     env_vars: list[str] | None = None,
 ):
     destination = destination.resolve()
@@ -347,7 +344,6 @@ def install(
         host=host,
         wsgi_app=wsgi_app,
         executable=executable,
-        database_url=database_url
         env_vars=env_vars or [],
     )
 
@@ -564,7 +560,6 @@ def main():
                 host=args.host,
                 wsgi_app=args.wsgi_app,
                 executable=args.executable,
-                database_url=args.database_url,
             )
 
         elif args.command == "uninstall":
