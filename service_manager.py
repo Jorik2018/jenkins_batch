@@ -238,7 +238,7 @@ def create_service_xml(
     )
 
     print(f"Created: {service_xml}")
-    
+
 def create_runner(
     destination: Path,
     app_type: str,
@@ -247,7 +247,6 @@ def create_runner(
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
     executable: str | None = None,
-    env_vars: list[str] | None = None,
 ):
     if app_type == "reflex":
         from runners.reflex import create_runner
@@ -272,16 +271,6 @@ def create_runner(
         create_runner(
             destination=destination,
             executable=executable
-        )
-    elif app_type == "rust":
-        from runners.rust import create_runner
-        create_runner(
-            destination=destination,
-            executable=executable
-        )
-    else:
-        raise RuntimeError(
-            f"Unsupported application type: {app_type}"
         )
     
 def install(
