@@ -253,9 +253,8 @@ def create_runner(
     destination: Path,
     app_type: str,
     base_path: str,
-    app_file: str = "streamlit_erp/app.py",
+    main: str,
     host: str = "0.0.0.0",
-    wsgi_app: str = "app:app",
     executable: str | None = None,
 ):
     if app_type == "reflex":
@@ -267,14 +266,13 @@ def create_runner(
         create_runner(
             destination=destination,
             base_path=base_path,
-            app_file=app_file,
+            main=main,
         )
     elif app_type == "flask":
         from runners.flask import create_runner
         create_runner(
             destination=destination,
-            host=host,
-            wsgi_app=wsgi_app,
+            host=host
         )
     elif app_type == "go":
         from runners.flask import create_runner
@@ -290,9 +288,8 @@ def install(
     description: str,
     app_type: str,
     base_path: str,
-    app_file: str,
+    main: str,
     host: str = "0.0.0.0",
-    wsgi_app: str = "app:app",
     executable: str | None = None,
     env_vars: list[str] | None = None,
 ):
@@ -336,9 +333,8 @@ def install(
         destination=destination,
         app_type=app_type,
         base_path=base_path,
-        app_file=app_file,
+        main=main,
         host=host,
-        wsgi_app=wsgi_app,
         executable=executable
     )
 
@@ -350,12 +346,11 @@ def install(
 
         args = (
             f"--listen={host} "
-            f"{wsgi_app}"
+            f"{main}"
         )
 
     print("DEBUG app_type:", repr(app_type))
     print("DEBUG host:", repr(host))
-    print("DEBUG wsgi_app:", repr(wsgi_app))
     print("DEBUG executable:", repr(executable))
     print("DEBUG arguments:", repr(args))
 
@@ -508,7 +503,7 @@ def parse_args():
     )
 
     install_parser.add_argument(
-        "--app-file",
+        "--main",
         help="Streamlit application entry point",
     )
 
@@ -568,9 +563,8 @@ def main():
                 description=args.description,
                 app_type=args.app_type,
                 base_path=args.base_path,
-                app_file=args.app_file,
+                main=args.main,
                 host=args.host,
-                wsgi_app=args.wsgi_app,
                 executable=args.executable,
                 env_vars=args.env,
             )
