@@ -254,7 +254,7 @@ def create_service_xml(
 def create_runner(
     destination: Path,
     app_type: str,
-    base_path: str = "streamlit",
+    base_path: str,
     app_file: str = "streamlit_erp/app.py",
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
@@ -291,8 +291,8 @@ def install(
     service_name: str,
     description: str,
     app_type: str,
-    base_path: str = "streamlit",
-    app_file: str = "streamlit_erp/app.py",
+    base_path: str,
+    app_file: str,
     host: str = "0.0.0.0",
     wsgi_app: str = "app:app",
     executable: str | None = None,
@@ -503,7 +503,6 @@ def parse_args():
 
     install_parser.add_argument(
         "--app-file",
-        default="streamlit_erp/app.py",
         help="Streamlit application entry point",
     )
 
