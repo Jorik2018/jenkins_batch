@@ -169,11 +169,13 @@ def create_service_xml(
     service_name: str,
     description: str,
     executable: str,
+    arguments: str | None = None,
     env_vars: list[str] | None = None,
 ):
     print("DEBUG create_service_xml env_vars:", repr(env_vars))
 
     env_vars = env_vars or []
+    arguments = arguments or []
 
     def xml_attr(value: str) -> str:
         return escape(
@@ -209,6 +211,16 @@ def create_service_xml(
     env_xml = "\n".join(env_lines)
 
     executable_path = destination / executable
+    arguments_xml = ""
+
+    if arguments:
+        arguments_value = " ".join(arguments)
+
+        arguments_xml = (
+            f"  <arguments>"
+            f"{xml_attr(arguments_value)}"
+            f"</arguments>"
+        )
 
     xml = f"""<service>
   <id>{xml_attr(service_id)}</id>
@@ -216,7 +228,7 @@ def create_service_xml(
   <description>{xml_attr(description)}</description>
 
   <executable>{xml_attr(str(executable_path))}</executable>
-
+{arguments_xml}
   <workingdirectory>{xml_attr(str(destination))}</workingdirectory>
 
 {env_xml}
@@ -332,13 +344,23 @@ def install(
         executable=executable
     )
 
+
+    args=None
+    if app_type == "waitress":
+        executable = r".venv\Scripts\waitress-serve"
+        args = (
+            f"--listen={host} "
+            f"{wsgi_app}"
+        )
+
     create_service_xml(
         destination,
         service_id,
         service_name,
         description,
         env_vars=env_vars or [],
-        executable=executable
+        executable=executable,
+        arguments=args
     )
 
     if service_exists(service_id):
