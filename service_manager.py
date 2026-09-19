@@ -343,13 +343,21 @@ def install(
     )
 
 
-    args=None
+    args = None
+
     if app_type == "waitress":
-        executable = r".venv\Scripts\waitress-serve"
+        executable = r".venv\Scripts\waitress-serve.exe"
+
         args = (
             f"--listen={host} "
             f"{wsgi_app}"
         )
+
+    print("DEBUG app_type:", repr(app_type))
+    print("DEBUG host:", repr(host))
+    print("DEBUG wsgi_app:", repr(wsgi_app))
+    print("DEBUG executable:", repr(executable))
+    print("DEBUG arguments:", repr(args))
 
     create_service_xml(
         destination,
