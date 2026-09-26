@@ -216,7 +216,7 @@ def create_service_xml(
     if arguments:
         arguments_xml = (
             f"  <arguments>"
-            f"{xml_attr(arguments)}"
+            f"{xml_attr(" ".join(arguments))}"
             f"</arguments>"
         )
 
