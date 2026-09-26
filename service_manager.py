@@ -340,7 +340,7 @@ def install(
     print("DEBUG app_type:", repr(app_type))
     print("DEBUG host:", repr(host))
     print("DEBUG executable:", repr(executable))
-    print("DEBUG arguments:", repr(args))
+    #print("DEBUG arguments:", repr(args))
 
     create_service_xml(
         destination,
