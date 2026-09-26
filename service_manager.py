@@ -170,11 +170,11 @@ def create_service_xml(
     description: str,
     executable: str,
     arguments: str | None = None,
-    env_vars: list[str] | None = None,
+    envs: list[str] | None = None,
 ):
-    print("DEBUG create_service_xml env_vars:", repr(env_vars))
+    print("DEBUG create_service_xml envs:", repr(envs))
 
-    env_vars = env_vars or []
+    envs = envs or []
     arguments = arguments or []
 
     def xml_attr(value: str) -> str:
@@ -188,7 +188,7 @@ def create_service_xml(
 
     env_lines = []
 
-    for item in env_vars:
+    for item in envs:
         if "=" not in item:
             raise RuntimeError(
                 f"Invalid environment variable: {item}. "
@@ -290,13 +290,13 @@ def install(
     main: str,
     host: str = "0.0.0.0",
     executable: str | None = None,
-    args: str | None = None,
-    env_vars: list[str] | None = None,
+    args: list[str] | None = None,
+    envs: list[str] | None = None,
 ):
     destination = destination.resolve()
-    env_vars = env_vars or []
+    envs = envs or []
 
-    print("DEBUG install env_vars:", repr(env_vars))
+    print("DEBUG install envs:", repr(envs))
 
     if not destination.exists():
         raise RuntimeError(
@@ -347,7 +347,7 @@ def install(
         service_id,
         service_name,
         description,
-        env_vars=env_vars or [],
+        envs=envs or [],
         executable=executable,
         arguments=args
     )
@@ -508,12 +508,6 @@ def parse_args():
     )
 
     install_parser.add_argument(
-        "--wsgi-app",
-        default="app:app",
-        help="WSGI application entry point, e.g. app:app",
-    )
-
-    install_parser.add_argument(
         "--executable",
         help="Executable file for Go applications, e.g. my-api.exe",
     )
@@ -559,8 +553,8 @@ def main():
                 main=args.main,
                 host=args.host,
                 executable=args.executable,
-                env_vars=args.env,
-                args=args
+                envs=args.env,
+                args=args.args
             )
 
         elif args.command == "uninstall":
