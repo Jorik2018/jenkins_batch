@@ -556,7 +556,6 @@ def main():
                 service_name=args.name,
                 description=args.description,
                 app_type=args.app_type,
-                base_path=args.base_path,
                 main=args.main,
                 host=args.host,
                 executable=args.executable,
