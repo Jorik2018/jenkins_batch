@@ -169,7 +169,7 @@ def create_service_xml(
     service_name: str,
     description: str,
     executable: str,
-    arguments: str | None = None,
+    arguments: list[str] | None = None,
     envs: list[str] | None = None,
 ):
     print("DEBUG create_service_xml envs:", repr(envs))
