@@ -287,10 +287,10 @@ def install(
     service_name: str,
     description: str,
     app_type: str,
-    base_path: str,
     main: str,
     host: str = "0.0.0.0",
     executable: str | None = None,
+    args: str | None = None,
     env_vars: list[str] | None = None,
 ):
     destination = destination.resolve()
@@ -328,18 +328,6 @@ def install(
     print(
         f"Copied wrapper: {wrapper_destination}"
     )
-
-    create_runner(
-        destination=destination,
-        app_type=app_type,
-        base_path=base_path,
-        main=main,
-        host=host,
-        executable=executable
-    )
-
-
-    args = None
 
     if app_type == "waitress":
         executable = r".venv\Scripts\waitress-serve.exe"
@@ -497,6 +485,12 @@ def parse_args():
     )
 
     install_parser.add_argument(
+        "--args",
+        action="append",
+        default=[],
+    )
+
+    install_parser.add_argument(
         "--base-path",
         default="streamlit",
         help="Base URL path for Streamlit",
@@ -567,6 +561,7 @@ def main():
                 host=args.host,
                 executable=args.executable,
                 env_vars=args.env,
+                args=args
             )
 
         elif args.command == "uninstall":
