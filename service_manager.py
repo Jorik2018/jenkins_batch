@@ -382,7 +382,7 @@ def install(
     print("DEBUG app_type:", repr(app_type))
     print("DEBUG host:", repr(host))
     print("DEBUG executable:", repr(executable))
-    #print("DEBUG arguments:", repr(args))
+    # print("DEBUG arguments:", repr(args))
 
     create_service_xml(
         destination,
@@ -391,7 +391,7 @@ def install(
         description,
         envs=envs or [],
         executable=executable,
-        arguments=args
+        arguments=args,
     )
 
     if service_exists(service_id):
@@ -402,32 +402,32 @@ def install(
             "Configuration files were refreshed; "
             "installation skipped."
         )
-        return
-
-    print(
-        f'Installing service "{service_id}"...'
-    )
-
-    execute(
-        [
-            str(wrapper_destination),
-            "install",
-        ],
-        cwd=destination,
-        check=True,
-    )
-
-    if not service_exists(service_id):
-        raise RuntimeError(
-            f'Service "{service_id}" '
-            "was not registered correctly."
+    else:
+        print(
+            f'Installing service "{service_id}"...'
         )
+
+        execute(
+            [
+                str(wrapper_destination),
+                "install",
+            ],
+            cwd=destination,
+            check=True,
+        )
+
+        if not service_exists(service_id):
+            raise RuntimeError(
+                f'Service "{service_id}" '
+                "was not registered correctly."
+            )
+
     set_service_auto_start(service_id)
 
     print(
-        f'Service "{service_id}" installed.'
+        f'Service "{service_id}" installed/configured.'
     )
-
+    
 def uninstall(service_id: str, destination: Path):
     if not service_exists(service_id):
         print(
