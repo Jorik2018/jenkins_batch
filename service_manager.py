@@ -42,6 +42,27 @@ def service_exists(service_id: str) -> bool:
     )
     return result.returncode == 0
 
+def service_start_type(service_id: str) -> str | None:
+    result = execute(
+        ["sc", "qc", service_id]
+    )
+
+    if result.returncode != 0:
+        return None
+
+    output = result.stdout.upper()
+
+    if "AUTO_START" in output:
+        return "AUTO"
+
+    if "DEMAND_START" in output:
+        return "MANUAL"
+
+    if "DISABLED" in output:
+        return "DISABLED"
+
+    return "UNKNOWN"
+
 def service_state(service_id: str) -> str | None:
     result = execute(
         ["sc", "query", service_id]
@@ -280,6 +301,27 @@ def create_runner(
             destination=destination,
             executable=executable
         )
+
+def set_service_auto_start(service_id: str):
+    if not service_exists(service_id):
+        raise RuntimeError(
+            f'Service "{service_id}" is not installed.'
+        )
+
+    execute(
+        [
+            "sc",
+            "config",
+            service_id,
+            "start=",
+            "auto",
+        ],
+        check=True,
+    )
+
+    print(
+        f'Service "{service_id}" configured for automatic startup.'
+    )
     
 def install(
     service_id: str,
@@ -380,6 +422,7 @@ def install(
             f'Service "{service_id}" '
             "was not registered correctly."
         )
+    set_service_auto_start(service_id)
 
     print(
         f'Service "{service_id}" installed.'
@@ -415,16 +458,15 @@ def uninstall(service_id: str, destination: Path):
 
 def status(service_id: str):
     state = service_state(service_id)
+    start_type = service_start_type(service_id)
 
     if state is None:
-        print(
-            f'{service_id}: NOT INSTALLED'
-        )
+        print(f'{service_id}: NOT INSTALLED')
         return
 
-    print(
-        f"{service_id}: {state}"
-    )
+    print(f"{service_id}:")
+    print(f"  State:      {state}")
+    print(f"  Start type: {start_type}")
 
 def restart(service_id: str):
     stop(service_id)
