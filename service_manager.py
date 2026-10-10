@@ -184,6 +184,21 @@ def parse_env_vars(items: list[str]) -> dict[str, str]:
 
     return result
 
+def set_service_dependency(
+    service_id: str,
+    dependency: str,
+):
+    execute(
+        [
+            "sc",
+            "config",
+            service_id,
+            "depend=",
+            dependency,
+        ],
+        check=True,
+    )
+
 def create_service_xml(
     destination: Path,
     service_id: str,
@@ -270,38 +285,6 @@ def create_service_xml(
 
     print(f"Created: {service_xml}")
 
-def create_runner(
-    destination: Path,
-    app_type: str,
-    base_path: str,
-    main: str,
-    host: str = "0.0.0.0",
-    executable: str | None = None,
-):
-    if app_type == "reflex":
-        from runners.reflex import create_runner
-        create_runner(destination)
-
-    elif app_type == "streamlit":
-        from runners.streamlit import create_runner
-        create_runner(
-            destination=destination,
-            base_path=base_path,
-            main=main,
-        )
-    elif app_type == "flask":
-        from runners.flask import create_runner
-        create_runner(
-            destination=destination,
-            host=host
-        )
-    elif app_type == "go":
-        from runners.flask import create_runner
-        create_runner(
-            destination=destination,
-            executable=executable
-        )
-
 def set_service_auto_start(service_id: str):
     if not service_exists(service_id):
         raise RuntimeError(
@@ -328,8 +311,7 @@ def install(
     destination: Path,
     service_name: str,
     description: str,
-    app_type: str,
-    main: str,
+    depends_on : str,
     host: str = "0.0.0.0",
     executable: str | None = None,
     args: list[str] | None = None,
@@ -371,15 +353,6 @@ def install(
         f"Copied wrapper: {wrapper_destination}"
     )
 
-    if app_type == "waitress":
-        executable = r".venv\Scripts\waitress-serve.exe"
-
-        args = (
-            f"--listen={host} "
-            f"{main}"
-        )
-
-    print("DEBUG app_type:", repr(app_type))
     print("DEBUG host:", repr(host))
     print("DEBUG executable:", repr(executable))
     # print("DEBUG arguments:", repr(args))
@@ -514,9 +487,9 @@ def parse_args():
     )
 
     install_parser.add_argument(
-        "--type",
-        dest="app_type",
-        help="Application type",
+        "--depends-on",
+        dest="depends_on",
+        help="depends-on",
     )
 
     install_parser.add_argument(
@@ -530,17 +503,6 @@ def parse_args():
         "--args",
         action="append",
         default=[],
-    )
-
-    install_parser.add_argument(
-        "--base-path",
-        default="streamlit",
-        help="Base URL path for Streamlit",
-    )
-
-    install_parser.add_argument(
-        "--main",
-        help="Streamlit application entry point",
     )
 
     install_parser.add_argument(
@@ -591,8 +553,7 @@ def main():
                 destination=args.destination,
                 service_name=args.name,
                 description=args.description,
-                app_type=args.app_type,
-                main=args.main,
+                depends_on=args.depends_on,
                 host=args.host,
                 executable=args.executable,
                 envs=args.env,
